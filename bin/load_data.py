@@ -23,6 +23,10 @@ def main():
                         const=[],
                         help='Quiet mode',
                         )
+    parser.add_argument('--db', dest='database', action='store',
+                        default='docket',
+                        help='Database name',
+                        )
     args = parser.parse_args()
 
     verbosity = len(args.verbosity)
@@ -39,7 +43,9 @@ def main():
                         )
     log = logging.getLogger('loader')
 
-    task_results = [ (name, tasks.parse_file.delay(os.path.abspath(name)))
+    task_results = [ (name,
+                      tasks.parse_file.delay(os.path.abspath(name),
+                                             tasks.add_encodings_for_names.subtask(kwargs={'callback':tasks.store_case_in_database.subtask(kwargs={'dbname':args.database})})))
                      for name in args.filenames
                      ]
     for name, tr in task_results:
