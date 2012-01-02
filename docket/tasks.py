@@ -8,6 +8,8 @@ from docket import vtr
 
 @task
 def parse_file(filename):
+    """Given the name of a VTR file, parse it and load the data into the database.
+    """
     log = parse_file.get_logger()
     log.info('loading from %s', filename)
     try:
@@ -32,6 +34,8 @@ FIELDS_TO_ENCODE = [ 'first_name', 'middle_name', 'last_name' ]
 
 @task
 def add_encodings_for_names(case):
+    """Add phonetic encodings for names of participants associated with a case.
+    """
     log = add_encodings_for_names.get_logger()
     log.info('encoding names for %s/%s', case['book'], case['number'])
     for participant in case['participants']:
