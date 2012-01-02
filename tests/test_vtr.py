@@ -482,7 +482,7 @@ b 1902/6
 pg 170
 c 172
 sr o
-""".splitlines()))
+""".splitlines(), continueOnError=False))
 
 def test_sentence_rendered_other():
     p = vtr.Parser()
