@@ -34,8 +34,8 @@ ad 30 Mar 1903
 hd 01 Apr 1903
 """.splitlines()))
     case = cases[0]
-    assert case['arrest_date'] == datetime.date(1903, 3, 30)
-    assert case['hearing_date'] == datetime.date(1903, 4, 1)
+    assert case['arrest_date'] == datetime.datetime(1903, 3, 30)
+    assert case['hearing_date'] == datetime.datetime(1903, 4, 1)
 
 def test_defendant_simple():
     p = vtr.Parser()
@@ -561,7 +561,7 @@ ss 5 F 1 Jan 2012
     assert ss['type'] == 'fine'
     assert ss['amount'] == 5.0
     assert ss['units'] == '$'
-    assert ss['date'] == datetime.date(2012, 1, 1)
+    assert ss['date'] == datetime.datetime(2012, 1, 1)
 
 def test_sentence_served_fine_date_note():
     p = vtr.Parser()
@@ -580,7 +580,7 @@ ss 5 F 1 Jan 2012 (note goes here)
     assert ss['type'] == 'fine'
     assert ss['amount'] == 5.0
     assert ss['units'] == '$'
-    assert ss['date'] == datetime.date(2012, 1, 1)
+    assert ss['date'] == datetime.datetime(2012, 1, 1)
     assert ss['note'] == 'note goes here'
 
 def test_sentence_served_cost():

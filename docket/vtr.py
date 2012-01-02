@@ -31,7 +31,7 @@ def parse_date(s, loc, toks):
     for bad, good in [ ('Sept', 'Sep'), ('July', 'Jul')]:
         date_string = date_string.replace(bad, good)
     parsed_time = time.strptime(date_string, '%d %b %Y')
-    date = datetime.date(*parsed_time[:3])
+    date = datetime.datetime(*parsed_time[:3])
     return date
 DATE.setParseAction(parse_date)
 

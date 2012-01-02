@@ -3,6 +3,7 @@ import logging
 
 from celery.task import task
 import fuzzy
+from pymongo import Connection
 
 from docket import vtr
 
@@ -25,9 +26,12 @@ def parse_file(filename):
         errors = [ unicode(err) ]
     return errors
 
+def metaphone(s, m=fuzzy.DMetaphone()):
+    return m(s)[0]
+
 ENCODERS = [
     ('soundex', fuzzy.Soundex(4)),
-    ('metaphone', fuzzy.DMetaphone()),
+    ('metaphone', metaphone),
     ('nysiis', fuzzy.nysiis),
     ]
 FIELDS_TO_ENCODE = [ 'first_name', 'middle_name', 'last_name' ]
@@ -42,7 +46,9 @@ def add_encodings_for_names(case):
         for field in FIELDS_TO_ENCODE:
             for encoder_name, encoder in ENCODERS:
                 try:
-                    participant['%s_%s' % (field, encoder_name)] = encoder(participant[field])
+                    orig = participant[field]
+                    encoded = encoder(orig) if orig else ''
+                    participant['%s_%s' % (field, encoder_name)] = encoded
                 except Exception as err:
                     log.error('Error encoding %s to %s for %s/%s "%s" (%s)',
                               field, encoder_name,
@@ -50,4 +56,21 @@ def add_encodings_for_names(case):
                               participant[field],
                               err,
                               )
+    store_case_in_database.subtask().delay(case)
     return
+
+@task
+def store_case_in_database(case):
+    """Store the case in the database, updating an existing entry if found.
+    """
+    log = store_case_in_database.get_logger()
+    case['_id'] = '%s/%s' % (case['book'], case['number'])
+    log.info('storing %s', case['_id'])
+    conn = Connection()
+    db = conn.docket_test
+    db.books.update({'_id':case['_id']},
+                    case,
+                    True, # upsert
+                    False,
+                    )
+    
