@@ -41,7 +41,7 @@ def main():
     logging.basicConfig(level=level,
                         format='%(levelname)-8s %(name)s %(message)s',
                         )
-    log = logging.getLogger('loader')
+    log = logging.getLogger('vtr_loader')
 
     task_results = [ (name,
                       tasks.parse_file.delay(os.path.abspath(name),
