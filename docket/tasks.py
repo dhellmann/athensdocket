@@ -13,7 +13,7 @@ def parse_file(filename):
         with open(filename, 'r') as f:
             parser = vtr.Parser()
             for record in parser.parse(f):
-                log.info('New case: %s', record)
+                log.info('New case: %s/%s', record['book'], record['number'])
             errors = [ 'Parse error at %s:%s "%s" (%s)' % (filename, num, line, err)
                        for num, line, err in parser.errors
                        ]
