@@ -132,6 +132,7 @@ class Parser(object):
         self.page = None
         self.case = None
         self.next_case = None
+        self.errors = []
         return
 
     def feed_book(self, s, loc, toks):
@@ -349,13 +350,14 @@ class Parser(object):
         If continueOnError is true the parser logs any
         errors and keeps going.
         """
-        for line in lines:
+        for num, line in enumerate(lines):
             line = line.strip()
             log.debug(line)
             if line:
                 try:
                     self.case_record_parser.parseString(line)
                 except ParseException as err:
+                    self.errors.append((num, line, unicode(err)))
                     log.error('Parse error processing %r: %s', line, err)
                     if not continueOnError:
                         raise
