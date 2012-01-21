@@ -59,12 +59,32 @@ NOTE = ( Suppress(Literal('('))
 
 # full name title=Mr. suffix=Jr. ( anything )
 # don't know how many parts of a name there will be...
+@show_parse_action
+def parse_participant(s, loc, toks):
+    first = middle = last = ''
+    parts = toks['fullname'].strip().split()
+    last = parts[-1]
+    parts = parts[:-1]
+    if parts:
+        first = parts[0]
+        parts = parts[1:]
+    middle = ' '.join(parts)
+    new_participant = { 'first_name':first,
+                        'middle_name':middle,
+                        'last_name':last,
+                        'full_name':toks['fullname'].strip(),
+                        'note': toks.get('note', [''])[0],
+                        'title': toks.get('title', ''),
+                        'suffix': toks.get('suffix', ''),
+                        }
+    return new_participant
 NAME_CHARS = alphas + '.<>[]{},'
 NAME = (Regex(r'([^(=]+(\s+|$))+').setResultsName('fullname')
         + Optional(CaselessLiteral('title=') + Word(NAME_CHARS).setResultsName('title'))
         + Optional(CaselessLiteral('suffix=') + Word(NAME_CHARS).setResultsName('suffix'))
         + Optional(NOTE).setResultsName('note')
-        ).setName('name').setResultsName('name')
+        ).setName('name')
+NAME.setParseAction(parse_participant)
 
 # c - cost in $
 # f - fine in $
@@ -77,24 +97,30 @@ NAME = (Regex(r'([^(=]+(\s+|$))+').setResultsName('fullname')
 # w - days of labor
 SENTENCE_TYPE = oneOf('c f j l m o p pd r w', caseless=True).setName('sentence-type')
 
+def mk_keyword(name):
+    """Given a keyword, produce the parser setting to
+    recognize and then skip over it.
+    """
+    return CaselessKeyword(name).suppress()
+
 # "fields" of a case record
-ARREST_DATE = (CaselessKeyword('ad') + DATE.setResultsName('date')).setName('arrest-date')
-ARRESTING_OFFICER = (CaselessKeyword('ao') + NAME).setName('arresting-officer')
-BOOK = (CaselessKeyword('b') + Word(nums).setResultsName('year') + Suppress(Literal('/')) + Word(nums).setResultsName('number')).setName('book')
-CASE = (CaselessKeyword('c') + Word(printables).setResultsName('number')).setName('case')
-DEFENDANT = (CaselessKeyword('d') + NAME).setName('defendant')
-DEFENDANT_VEHICLE = (CaselessKeyword('dv') + Suppress(White()) + restOfLine.setResultsName('vehicle')).setName('defendant-vehicle')
-DEFENSE_WITNESS = (CaselessKeyword('dw') + NAME).setName('defense-witness')
-GENDER = (CaselessKeyword('g') + oneOf('m f', caseless=True).setResultsName('gender')).setName('gender')
-HEARING_DATE = (CaselessKeyword('hd') + DATE.setResultsName('date')).setName('hearing-date')
-LOCATION = (CaselessKeyword('l') + Suppress(White()) + restOfLine.setResultsName('location')).setName('location')
-CASE_NOTE = (CaselessKeyword('n') + Suppress(White()) + restOfLine.setResultsName('note')).setName('case-note')
-OUTCOME = (CaselessKeyword('o') + (oneOf('g guilty guitly ng d dismissed s suspended', caseless=True) | CaselessLiteral('not guilty')).setResultsName('outcome')).setName('outcome')
-PLEA = (CaselessKeyword('p') + (oneOf('g ng nc guilty', caseless=True)
+ARREST_DATE = (mk_keyword('ad') + DATE.setResultsName('date')).setName('arrest-date')
+ARRESTING_OFFICER = (mk_keyword('ao') + NAME).setName('arresting-officer')
+BOOK = (mk_keyword('b') + Word(nums).setResultsName('year') + Suppress(Literal('/')) + Word(nums).setResultsName('number')).setName('book')
+CASE = (mk_keyword('c') + Word(printables).setResultsName('number')).setName('case')
+DEFENDANT = (mk_keyword('d') + NAME).setName('defendant')
+DEFENDANT_VEHICLE = (mk_keyword('dv') + Suppress(White()) + restOfLine.setResultsName('vehicle')).setName('defendant-vehicle')
+DEFENSE_WITNESS = (mk_keyword('dw') + NAME).setName('defense-witness')
+GENDER = (mk_keyword('g') + oneOf('m f', caseless=True).setResultsName('gender')).setName('gender')
+HEARING_DATE = (mk_keyword('hd') + DATE.setResultsName('date')).setName('hearing-date')
+LOCATION = (mk_keyword('l') + Suppress(White()) + restOfLine.setResultsName('location')).setName('location')
+CASE_NOTE = (mk_keyword('n') + Suppress(White()) + restOfLine.setResultsName('note')).setName('case-note')
+OUTCOME = (mk_keyword('o') + (oneOf('g guilty guitly ng d dismissed s suspended', caseless=True) | CaselessLiteral('not guilty')).setResultsName('outcome')).setName('outcome')
+PLEA = (mk_keyword('p') + (oneOf('g ng nc guilty', caseless=True)
                                 | CaselessLiteral('not guilty')).setResultsName('plea')).setName('plea')
-PAGE = (CaselessKeyword('pg') + Word(nums).setResultsName('number')).setName('page')
-RACE = (CaselessKeyword('r') + oneOf('w c', caseless=True)).setName('race')
-SENTENCE_RENDERED = (CaselessKeyword('sr') + (
+PAGE = (mk_keyword('pg') + Word(nums).setResultsName('number')).setName('page')
+RACE = (mk_keyword('r') + oneOf('w c', caseless=True)).setName('race')
+SENTENCE_RENDERED = (mk_keyword('sr') + (
     (Word(nums + '.').setResultsName('amount')
      + Optional(SENTENCE_TYPE).setResultsName('type1')
      + Optional(NOTE).setResultsName('note1')
@@ -102,22 +128,22 @@ SENTENCE_RENDERED = (CaselessKeyword('sr') + (
     | oneOf('guilty dismissed pd', caseless=True).setResultsName('type2')
     | CaselessLiteral('o').setResultsName('type3') + NOTE.setResultsName('note2')
     )).setName('sentence-rendered')
-SENTENCE_SERVED = ( CaselessKeyword('ss')
+SENTENCE_SERVED = ( mk_keyword('ss')
                     + Optional(Word(nums + '.').setResultsName('amount'))
                     + Optional(SENTENCE_TYPE).setResultsName('type')
                     + Optional(DATE.setResultsName('date'))
                     + Optional(NOTE.setResultsName('note'))
                     ).setName('sentence-served')
-SENTENCE_CONTEMPT = (CaselessKeyword('sc')
+SENTENCE_CONTEMPT = (mk_keyword('sc')
                      + Word(nums + '.').setResultsName('amount')
                      + Optional(SENTENCE_TYPE.setResultsName('type'))
                      + Optional(NOTE.setResultsName('note'))
                      ).setName('sentence-contempt')
-VIOLATION = (CaselessKeyword('v')
+VIOLATION = (mk_keyword('v')
              + Word(printables).setResultsName('violation')
              + Optional(Suppress(White()) + NOTE.setResultsName('note'))
              ).setName('violation')
-WITNESS = (CaselessKeyword('w')
+WITNESS = (mk_keyword('w')
            + NAME
            ).setName('witness')
 
@@ -193,45 +219,30 @@ class Parser(object):
 
     def add_participant(self, role, toks):
         "Add a person's name to the case"
-        first = middle = last = ''
-        parts = toks['fullname'].strip().split()
-        last = parts[-1]
-        parts = parts[:-1]
-        if parts:
-            first = parts[0]
-            parts = parts[1:]
-        middle = ' '.join(parts)
-        new_participant = { 'role': role,
-                            'first_name':first,
-                            'middle_name':middle,
-                            'last_name':last,
-                            'full_name':toks['fullname'].strip(),
-                            'note': toks.get('note', [''])[0],
-                            'title': toks.get('title', ''),
-                            'suffix': toks.get('suffix', ''),
-                            }
+        new_participant = { 'role':role }
+        new_participant.update(toks)
         log.debug('adding participant %s', new_participant)
         self.case['participants'].append( new_participant )
 
     @show_parse_action
     def feed_d(self, s=None, loc=None, toks=None):
         "Defendant"
-        self.add_participant('defendant', toks)
+        self.add_participant('defendant', toks[0])
 
     @show_parse_action
     def feed_w(self, s, loc, toks):
         "Witness"
-        self.add_participant('witness', toks)
+        self.add_participant('witness', toks[0])
 
     @show_parse_action
     def feed_dw(self, s, loc, toks):
         "Defense witness"
-        self.add_participant('defense witness', toks)
+        self.add_participant('defense witness', toks[0])
 
     @show_parse_action
     def feed_ao(self, s=None, loc=None, toks=None):
         "Arresting officer"
-        self.add_participant('arresting officer', toks)
+        self.add_participant('arresting officer', toks[0])
 
     @show_parse_action
     def feed_dv(self, s, loc, toks):
