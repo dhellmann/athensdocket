@@ -124,6 +124,25 @@ w C. A. Lambert title=Mrs.
     assert part['last_name'] == 'Lambert'
     assert part.get('title') == 'Mrs.'
 
+def test_witness_note():
+    p = vtr.Parser()
+    cases = list(p.parse("""
+b 1902/6
+pg 147
+c 103
+w C. A. Lambert (note goes here)
+""".splitlines()))
+    case = cases[0]
+    assert len(case['participants']) == 1
+    part = case['participants'][0]
+    assert part['role'] == 'witness'
+    assert part['full_name'] == 'C. A. Lambert'
+    assert part['first_name'] == 'C.'
+    assert part['middle_name'] == 'A.'
+    assert part['last_name'] == 'Lambert'
+    assert part.get('title') == ''
+    assert part.get('note') == 'note goes here'
+
 def test_defense_witness_title():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -945,3 +964,101 @@ r C
 """.splitlines()))
     case = cases[0]
     assert case['race'] == 'c'
+
+def test_multiple_cases_complete():
+    p = vtr.Parser()
+    cases = p.parse("""
+b 1902/6
+
+pg 170
+c 172
+ad 30 Mar 1903
+hd 01 Apr 1903
+d Charley Thomas
+v 360
+l Hoyt Street
+ao Hamilton
+w J. T. Hamilton
+w A. J. Watson
+p guilty
+sr 5 F
+ss 5 PD
+
+pg 170
+c 173
+ad 30 Mar 1903
+hd 01 Apr 1903
+d Bulley Shaw
+v 360
+l Broad Street
+ao D. W. Hill
+w D. W. Hill
+p guilty
+sr 5 F
+sr 1.25 C
+ss 6.25 PD
+
+pg 170
+c 174
+ad 30 Mar 1903
+hd 01 Apr 1903
+d Murphey Lane
+v 360
+l College & River Streets
+ao Richards
+ao Thomas
+w H. N. Thomas
+w C. B. Richards
+p guilty
+sr 5 F
+sr 1.25 C
+sr 12.5 W
+ss W (Turned over to Streets)
+ss 6 PD 02 Apr 1903 (Paid back by J. W. Barnett of the above fine)
+
+
+b 1902/6
+pg 75
+c 824
+ad 26 Jul 1902
+hd 24 Nov 1902
+d William Griffith (alias William Bolton)
+v 363
+l Mitchell Street
+ao R. A> Saye
+w Louis Cook
+w Ben Coleman
+w Robert Porter
+w Adolphus Pledger
+p guilty
+sr 20 F
+sr 1.25 C
+ss 21.25 PD
+
+b 1902/6
+
+pg 147
+c 103
+ad 21 Feb 1903
+hd 26 Feb 1903
+d Tom Thomas
+v 363
+l Strong Street
+ao Thomas
+ao Bradberry
+w C. A. Lambert title=Mrs.
+p guilty
+o dismissed
+""".splitlines())
+    assert len(list(cases)) == 5
+
+def test_multiple_cases_in_multiple_books():
+    p = vtr.Parser()
+    cases = p.parse("""
+b 1900/1
+c 1
+b 1900/2
+c 2
+""".splitlines())
+    assert len(list(cases)) == 2
+    
