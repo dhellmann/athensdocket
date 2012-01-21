@@ -23,8 +23,23 @@ import time
 
 log = logging.getLogger(__name__)
 
+def show_parse_action(f):
+    def action(*args):
+        if len(args) >= 3:
+            s, loc, toks = args[-3:]
+            log.debug('%s(%r, %s, %s)', f.func_name, s[loc:], loc, toks)
+        else:
+            log.debug('%s%r', f.func_name, args)
+        result = f(*args)
+        if result is not None:
+            log.debug('%s() -> %r', f.func_name, result)
+        return result
+    return action
+
+
 # day month year
 DATE = Word(nums) + Word(alphas) + Word(nums)
+@show_parse_action
 def parse_date(s, loc, toks):
     date_string = ' '.join(toks)
     log.debug('parsing date string %r', date_string)
@@ -34,12 +49,13 @@ def parse_date(s, loc, toks):
     date = datetime.datetime(*parsed_time[:3])
     return date
 DATE.setParseAction(parse_date)
+DATE.setName('date')
 
 # ( anything )
 NOTE = ( Suppress(Literal('('))
          + Regex(r'[^()]+')
          + Suppress(Literal(')'))
-         )
+         ).setName('note')
 
 # full name title=Mr. suffix=Jr. ( anything )
 # don't know how many parts of a name there will be...
@@ -48,7 +64,7 @@ NAME = (Regex(r'([^(=]+(\s+|$))+').setResultsName('fullname')
         + Optional(CaselessLiteral('title=') + Word(NAME_CHARS).setResultsName('title'))
         + Optional(CaselessLiteral('suffix=') + Word(NAME_CHARS).setResultsName('suffix'))
         + Optional(NOTE).setResultsName('note')
-        )
+        ).setName('name').setResultsName('name')
 
 # c - cost in $
 # f - fine in $
@@ -59,46 +75,51 @@ NAME = (Regex(r'([^(=]+(\s+|$))+').setResultsName('fullname')
 # p or pd - paid (combination fine, cost, contempt, etc.)
 # r - remitted by the mayor
 # w - days of labor
-SENTENCE_TYPE = oneOf('c f j l m o p pd r w', caseless=True)
+SENTENCE_TYPE = oneOf('c f j l m o p pd r w', caseless=True).setName('sentence-type')
 
 # "fields" of a case record
-ARREST_DATE = CaselessKeyword('ad') + DATE.setResultsName('date')
-ARRESTING_OFFICER = CaselessKeyword('ao') + NAME
-BOOK = CaselessKeyword('b') + Word(nums).setResultsName('year') + Suppress(Literal('/')) + Word(nums).setResultsName('number')
-CASE = CaselessKeyword('c') + Word(printables).setResultsName('number')
-DEFENDANT = CaselessKeyword('d') + NAME.setResultsName('name') + Optional(NOTE.setResultsName('note'))
-DEFENDANT_VEHICLE = CaselessKeyword('dv') + Suppress(White()) + restOfLine.setResultsName('vehicle')
-DEFENSE_WITNESS = CaselessKeyword('dw') + NAME + Optional(NOTE.setResultsName('note'))
-GENDER = CaselessKeyword('g') + oneOf('m f', caseless=True).setResultsName('gender')
-HEARING_DATE = CaselessKeyword('hd') + DATE.setResultsName('date')
-LOCATION = CaselessKeyword('l') + Suppress(White()) + restOfLine.setResultsName('location')
-CASE_NOTE = CaselessKeyword('n') + Suppress(White()) + restOfLine.setResultsName('note')
-OUTCOME = CaselessKeyword('o') + (oneOf('g guilty ng d dismissed s suspended', caseless=True) | CaselessLiteral('not guilty')).setResultsName('outcome')
-PLEA = CaselessKeyword('p') + (oneOf('g ng nc guilty', caseless=True)
-                               | CaselessLiteral('not guilty')).setResultsName('plea')
-PAGE = CaselessKeyword('pg') + Word(nums).setResultsName('number')
-RACE = CaselessKeyword('r') + oneOf('w c', caseless=True)
-SENTENCE_RENDERED = CaselessKeyword('sr') + (
+ARREST_DATE = (CaselessKeyword('ad') + DATE.setResultsName('date')).setName('arrest-date')
+ARRESTING_OFFICER = (CaselessKeyword('ao') + NAME).setName('arresting-officer')
+BOOK = (CaselessKeyword('b') + Word(nums).setResultsName('year') + Suppress(Literal('/')) + Word(nums).setResultsName('number')).setName('book')
+CASE = (CaselessKeyword('c') + Word(printables).setResultsName('number')).setName('case')
+DEFENDANT = (CaselessKeyword('d') + NAME).setName('defendant')
+DEFENDANT_VEHICLE = (CaselessKeyword('dv') + Suppress(White()) + restOfLine.setResultsName('vehicle')).setName('defendant-vehicle')
+DEFENSE_WITNESS = (CaselessKeyword('dw') + NAME).setName('defense-witness')
+GENDER = (CaselessKeyword('g') + oneOf('m f', caseless=True).setResultsName('gender')).setName('gender')
+HEARING_DATE = (CaselessKeyword('hd') + DATE.setResultsName('date')).setName('hearing-date')
+LOCATION = (CaselessKeyword('l') + Suppress(White()) + restOfLine.setResultsName('location')).setName('location')
+CASE_NOTE = (CaselessKeyword('n') + Suppress(White()) + restOfLine.setResultsName('note')).setName('case-note')
+OUTCOME = (CaselessKeyword('o') + (oneOf('g guilty guitly ng d dismissed s suspended', caseless=True) | CaselessLiteral('not guilty')).setResultsName('outcome')).setName('outcome')
+PLEA = (CaselessKeyword('p') + (oneOf('g ng nc guilty', caseless=True)
+                                | CaselessLiteral('not guilty')).setResultsName('plea')).setName('plea')
+PAGE = (CaselessKeyword('pg') + Word(nums).setResultsName('number')).setName('page')
+RACE = (CaselessKeyword('r') + oneOf('w c', caseless=True)).setName('race')
+SENTENCE_RENDERED = (CaselessKeyword('sr') + (
     (Word(nums + '.').setResultsName('amount')
      + Optional(SENTENCE_TYPE).setResultsName('type1')
      + Optional(NOTE).setResultsName('note1')
      )
     | oneOf('guilty dismissed pd', caseless=True).setResultsName('type2')
     | CaselessLiteral('o').setResultsName('type3') + NOTE.setResultsName('note2')
-    )
+    )).setName('sentence-rendered')
 SENTENCE_SERVED = ( CaselessKeyword('ss')
                     + Optional(Word(nums + '.').setResultsName('amount'))
                     + Optional(SENTENCE_TYPE).setResultsName('type')
                     + Optional(DATE.setResultsName('date'))
                     + Optional(NOTE.setResultsName('note'))
-                    )
+                    ).setName('sentence-served')
 SENTENCE_CONTEMPT = (CaselessKeyword('sc')
                      + Word(nums + '.').setResultsName('amount')
                      + Optional(SENTENCE_TYPE.setResultsName('type'))
-                    + Optional(NOTE.setResultsName('note'))
-                     )
-VIOLATION = CaselessKeyword('v') + Word(printables).setResultsName('violation') + Optional(Suppress(White()) + NOTE.setResultsName('note'))
-WITNESS = CaselessKeyword('w') + NAME + Optional(NOTE.setResultsName('note'))
+                     + Optional(NOTE.setResultsName('note'))
+                     ).setName('sentence-contempt')
+VIOLATION = (CaselessKeyword('v')
+             + Word(printables).setResultsName('violation')
+             + Optional(Suppress(White()) + NOTE.setResultsName('note'))
+             ).setName('violation')
+WITNESS = (CaselessKeyword('w')
+           + NAME
+           ).setName('witness')
 
 class Parser(object):
     """Vague text record parser.
@@ -135,20 +156,20 @@ class Parser(object):
         self.errors = []
         return
 
+    @show_parse_action
     def feed_book(self, s, loc, toks):
         "Start a new book"
-        log.debug('feed book: %r', toks)
         self.book = '%s/%s' % (toks['year'], toks['number'])
         log.info('Set book to %s', self.book)
 
+    @show_parse_action
     def feed_page(self, s, loc, toks):
         "Start a new page in the book"
-        log.debug('feed page: %r', toks)
         self.page = int(toks['number'])
 
+    @show_parse_action
     def feed_case(self, s, loc, toks):
         "Start a new case and prepare the previous one to be emitted."
-        log.debug('feed case: %r', toks)
         if self.case:
             self.next_case = self.case
         self.case = { 'book': self.book,
@@ -160,10 +181,12 @@ class Parser(object):
                       'sentence_contempt':[],
                       }
 
+    @show_parse_action
     def feed_ad(self, s, loc, toks):
         "Arrest date"
         self.case['arrest_date'] = toks['date']
 
+    @show_parse_action
     def feed_hd(self, s, loc, toks):
         "Hearing date"
         self.case['hearing_date'] = toks['date']
@@ -190,45 +213,45 @@ class Parser(object):
         log.debug('adding participant %s', new_participant)
         self.case['participants'].append( new_participant )
 
+    @show_parse_action
     def feed_d(self, s=None, loc=None, toks=None):
         "Defendant"
-        log.debug('feed_d %r %s %s', s, loc, toks)
         self.add_participant('defendant', toks)
 
+    @show_parse_action
     def feed_w(self, s, loc, toks):
         "Witness"
-        log.debug('feed_w %r, %s, %s', s, loc, toks)
         self.add_participant('witness', toks)
 
+    @show_parse_action
     def feed_dw(self, s, loc, toks):
         "Defense witness"
-        log.debug('feed_dw %r, %s, %s', s, loc, toks)
         self.add_participant('defense witness', toks)
 
+    @show_parse_action
     def feed_ao(self, s=None, loc=None, toks=None):
         "Arresting officer"
-        log.debug('feed_ao %r %s %s', s, loc, toks)
         self.add_participant('arresting officer', toks)
 
+    @show_parse_action
     def feed_dv(self, s, loc, toks):
         "Defendant vehicle"
-        log.debug('feed_dv %r, %s, %s', s, loc, toks)
         self.case['vehicle'] = toks['vehicle']
 
+    @show_parse_action
     def feed_v(self, s, loc, toks):
         "Violation code"
-        log.debug('feed_v %r, %s, %s', s, loc, toks)
         self.case['violation'] = toks['violation']
         self.case['violation_note'] = toks.get('note', [''])[0]
 
+    @show_parse_action
     def feed_l(self, s, loc, toks):
         "Location"
-        log.debug('feed_l %r, %s, %s', s, loc, toks)
         self.case['location'] = toks['location']
 
+    @show_parse_action
     def feed_p(self, s, loc, toks):
         "Plea"
-        log.debug('feed_p %r, %s, %s', s, loc, toks)
         found_plea = toks['plea'].lower()
         plea = { 'g':'guilty',
                  'ng':'not guilty',
@@ -238,14 +261,14 @@ class Parser(object):
                  }.get(found_plea, found_plea)
         self.case['plea'] = plea
 
+    @show_parse_action
     def feed_n(self, s, loc, toks):
         "Case note"
-        log.debug('feed_n %r, %s, %s', s, loc, toks)
         self.case['note'] = toks['note']
 
+    @show_parse_action
     def feed_o(self, s, loc, toks):
         "Outcome"
-        log.debug('feed_o %r, %s, %s', s, loc, toks)
         outcomes = { 'g':'guilty',
                      'ng':'not guilty',
                      'd':'dismissed',
@@ -267,9 +290,8 @@ class Parser(object):
         'w':('labor', 'days'),
         }
     
+    @show_parse_action
     def feed_sr(self, s, loc, toks):
-        log.debug('feed_sr %r, %s, %s', s, loc, toks)
-
         amount = float(toks.get('amount', 0))
 
         if toks.get('type1'):
@@ -296,9 +318,8 @@ class Parser(object):
                      }
         self.case['sentence_rendered'].append(new_sent)
     
+    @show_parse_action
     def feed_ss(self, s, loc, toks):
-        log.debug('feed_ss %r, %s, %s', s, loc, toks)
-
         found_sent_type = toks.get('type')
         converted_sent_type, sent_units = self.SENTENCE_TYPES.get(found_sent_type,
                                                          (found_sent_type, 'unknown')
@@ -314,9 +335,8 @@ class Parser(object):
         
         self.case['sentence_served'].append(new_sent)
     
+    @show_parse_action
     def feed_sc(self, s, loc, toks):
-        log.debug('feed_sc %r, %s, %s', s, loc, toks)
-
         found_sent_type = toks.get('type', 'f')
         converted_sent_type, sent_units = self.SENTENCE_TYPES.get(found_sent_type,
                                                          (found_sent_type, 'unknown')
@@ -331,14 +351,14 @@ class Parser(object):
         
         self.case['sentence_contempt'].append(new_sent)
 
+    @show_parse_action
     def feed_g(self, s, loc, toks):
         "Defendant's gender"
-        log.debug('feed_g %r, %s, %s', s, loc, toks)
         self.case['gender'] = toks['gender'].lower()
 
+    @show_parse_action
     def feed_r(self, s, loc, toks):
         "Defendant's race"
-        log.debug('feed_r %r, %s, %s', s, loc, toks)
         self.case['race'] = toks[-1].lower()
 
     def parse(self, lines, continueOnError=True):
