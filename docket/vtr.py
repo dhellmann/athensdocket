@@ -116,6 +116,7 @@ HEARING_DATE = (mk_keyword('hd') + DATE.setResultsName('date')).setName('hearing
 LOCATION = (mk_keyword('l') + Suppress(White()) + restOfLine.setResultsName('location')).setName('location')
 CASE_NOTE = (mk_keyword('n') + Suppress(White()) + restOfLine.setResultsName('note')).setName('case-note')
 OUTCOME = (mk_keyword('o') + (oneOf('g guilty guitly ng d dismissed s suspended', caseless=True) | CaselessLiteral('not guilty')).setResultsName('outcome')).setName('outcome')
+OTHER_PERSON = (mk_keyword('op') + NAME).setName('other_person')
 PLEA = (mk_keyword('p') + (oneOf('g ng nc guilty', caseless=True)
                                 | CaselessLiteral('not guilty')).setResultsName('plea')).setName('plea')
 PAGE = (mk_keyword('pg') + Word(nums).setResultsName('number')).setName('page')
@@ -173,6 +174,7 @@ class Parser(object):
             | OUTCOME.copy().setParseAction(self.feed_o)
             | GENDER.copy().setParseAction(self.feed_g)
             | RACE.copy().setParseAction(self.feed_r)
+            | OTHER_PERSON.copy().setParseAction(self.feed_op)
             )
         self.book = None
         self.yield_book = False
@@ -371,6 +373,11 @@ class Parser(object):
     def feed_r(self, s, loc, toks):
         "Defendant's race"
         self.case['race'] = toks[-1].lower()
+
+    @show_parse_action
+    def feed_op(self, s=None, loc=None, toks=None):
+        "Other person"
+        self.add_participant('other', toks[0])
 
     def parse(self, lines, continueOnError=True):
         """The public API.

@@ -1061,4 +1061,20 @@ b 1900/2
 c 2
 """.splitlines())
     assert len(list(cases)) == 2
-    
+
+def test_other_person_simple():
+    p = vtr.Parser()
+    cases = list(p.parse("""
+b 1902/6
+pg 170
+c 172
+op Charley Thomas
+""".splitlines()))
+    case = cases[0]
+    assert len(case['participants']) == 1
+    part = case['participants'][0]
+    assert part['role'] == 'other'
+    assert part['full_name'] == 'Charley Thomas'
+    assert part['first_name'] == 'Charley'
+    assert part['middle_name'] == ''
+    assert part['last_name'] == 'Thomas'
