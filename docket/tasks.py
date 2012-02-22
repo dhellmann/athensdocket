@@ -27,13 +27,21 @@ def parse_file(filename, callback=None):
         errors = [ unicode(err) ]
     return errors
 
-def metaphone(s, m=fuzzy.DMetaphone()):
-    return m(s)[0]
+def metaphone(s, e=fuzzy.DMetaphone()):
+    return e(s)
+
+def soundex(s, e=fuzzy.Soundex(4)):
+    # Return a list to be like metaphone
+    return [e(s)]
+
+def nysiis(s, e=fuzzy.nysiis):
+    # Return a list to be like metaphone
+    return [e(s)]
 
 ENCODERS = [
-    ('soundex', fuzzy.Soundex(4)),
+    ('soundex', soundex),
     ('metaphone', metaphone),
-    ('nysiis', fuzzy.nysiis),
+    ('nysiis', nysiis),
     ]
 FIELDS_TO_ENCODE = [ 'first_name', 'middle_name', 'last_name' ]
 
