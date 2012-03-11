@@ -10,6 +10,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(sys.argv[0])))
 from docket import tasks
 
+
 def main():
     parser = argparse.ArgumentParser(
         description='CLI app to load VTR files into the docket database',
@@ -34,20 +35,29 @@ def main():
         verbosity = 0
     if verbosity > 2:
         verbosity = 2
-    level = { 0:logging.WARNING,
-              1:logging.INFO,
-              2:logging.DEBUG,
-              }[verbosity]
+    level = {0: logging.WARNING,
+             1: logging.INFO,
+             2: logging.DEBUG,
+             }[verbosity]
     logging.basicConfig(level=level,
                         format='%(levelname)-8s %(name)s %(message)s',
                         )
     log = logging.getLogger('vtr_loader')
 
-    task_results = [ (name,
-                      tasks.parse_file.delay(os.path.abspath(name),
-                                             tasks.add_encodings_for_names.subtask(kwargs={'callback':tasks.store_case_in_database.subtask(kwargs={'dbname':args.database})})))
-                     for name in args.filenames
-                     ]
+    task_results = [
+        (name,
+         tasks.parse_file.delay(
+                os.path.abspath(name),
+                tasks.add_encodings_for_names.subtask(
+                    kwargs={
+                        'callback': tasks.store_case_in_database.subtask(
+                            kwargs={'dbname':args.database}),
+                        }
+                    )
+                )
+         )
+        for name in args.filenames
+        ]
     for name, tr in task_results:
         log.info('waiting for %s', name)
         errors = tr.get()
