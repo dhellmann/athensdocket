@@ -7,6 +7,8 @@ import logging
 import os
 import sys
 
+from pymongo import Connection
+
 sys.path.append(os.path.dirname(os.path.dirname(sys.argv[0])))
 from docket import tasks
 
@@ -28,6 +30,10 @@ def main():
                         default='docket',
                         help='Database name',
                         )
+    parser.add_argument('--reset-db', dest='reset_db', action='store_true',
+                        default=False,
+                        help='Reset (drop) the database before loading data',
+                        )
     args = parser.parse_args()
 
     verbosity = len(args.verbosity)
@@ -43,6 +49,14 @@ def main():
                         format='%(levelname)-8s %(name)s %(message)s',
                         )
     log = logging.getLogger('vtr_loader')
+
+    if args.reset_db:
+        log.info('Resetting the database...')
+        conn = Connection()
+        db = getattr(conn, args.database)
+        db.drop_collection('books')
+        conn.disconnect()
+        del conn
 
     task_results = [
         (name,
