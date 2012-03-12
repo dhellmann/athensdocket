@@ -88,10 +88,16 @@ def main():
 
     log.debug(query)
 
-    results = db.cases.find(query)
+    results = db.cases.find(query).sort([('_id', 1)])
+    n = 0
     for case in results:
-        pprint.pprint(case)
+        #pprint.pprint(case)
+        print case['_id']
+        for p in case['participants']:
+            print ' %(full_name)s (%(role)s)' % p
         print
+        n += 1
+    log.debug('Found %d results', n)
     return 0
 
 if __name__ == '__main__':
