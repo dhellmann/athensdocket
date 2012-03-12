@@ -1,8 +1,7 @@
 
 from celery.task import task, subtask
-import fuzzy
 
-from docket import vtr
+from docket import vtr, encodings
 
 
 @task
@@ -35,25 +34,6 @@ def parse_file(filename, db_factory, error_handler, callback=None):
             }
 
 
-def metaphone(s, e=fuzzy.DMetaphone()):
-    return e(s)
-
-
-def soundex(s, e=fuzzy.Soundex(4)):
-    # Return a list to be like metaphone
-    return [e(s)]
-
-
-def nysiis(s, e=fuzzy.nysiis):
-    # Return a list to be like metaphone
-    return [e(s)]
-
-
-ENCODERS = [
-    ('soundex', soundex),
-    ('metaphone', metaphone),
-    ('nysiis', nysiis),
-    ]
 FIELDS_TO_ENCODE = ['first_name', 'middle_name', 'last_name']
 
 
@@ -65,10 +45,10 @@ def add_encodings_for_names(case, db_factory, error_handler, callback=None):
     log.info('encoding names for %s/%s', case['book'], case['number'])
     for participant in case['participants']:
         for field in FIELDS_TO_ENCODE:
-            for encoder_name, encoder in ENCODERS:
+            for encoder_name, encoder in encodings.ENCODERS.items():
                 try:
                     orig = participant[field]
-                    encoded = encoder(orig) if orig else ''
+                    encoded = encoder(orig) if orig else ['']
                     participant['%s_%s' % (field, encoder_name)] = encoded
                 except Exception as err:
                     msg = 'Error encoding %s to %s for %s/%s "%s" (%s)' % \
@@ -92,7 +72,7 @@ def store_case_in_database(case, load_job_id, db_factory, error_handler):
     log.info('storing %s', case['_id'])
     try:
         db = db_factory()
-        db.books.update({'_id': case['_id']},
+        db.cases.update({'_id': case['_id']},
                         case,
                         True,  # upsert
                         False,
