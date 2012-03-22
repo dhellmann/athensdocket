@@ -1,5 +1,6 @@
 from mock import Mock
 
+from docket import encodings
 from docket import tasks
 
 
@@ -24,7 +25,7 @@ def test():
                                   error_handler=errors.append,
                                   )
     for field in tasks.FIELDS_TO_ENCODE:
-        for encoder_name, encoder in tasks.ENCODERS:
+        for encoder_name, encoder in encodings.ENCODERS.items():
             yield check_one, field, encoder_name, c
 
 
@@ -33,4 +34,4 @@ def test_fields():
 
 
 def test_encoders():
-    assert tasks.ENCODERS
+    assert encodings.ENCODERS
