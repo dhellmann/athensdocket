@@ -63,6 +63,8 @@ def main():
     job_id = unicode(uuid.uuid4())
     job_start = datetime.datetime.utcnow()
 
+    log.info('Starting job %s', job_id)
+
     # Get full paths to the input filenames
     filenames = [os.path.abspath(f)
                  for f in args.filenames
