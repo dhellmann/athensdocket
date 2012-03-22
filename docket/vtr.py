@@ -419,7 +419,7 @@ class Parser(object):
         If continueOnError is true the parser logs any
         errors and keeps going.
         """
-        for num, line in enumerate(lines):
+        for num, line in enumerate(lines, 1):
             line = line.strip()
             log.debug(line)
             if line:
