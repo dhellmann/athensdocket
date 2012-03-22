@@ -6,6 +6,7 @@ from nose.tools import assert_raises
 
 import datetime
 
+
 def test_book():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -15,6 +16,7 @@ c 1
     assert len(cases) == 1
     assert cases[0]['book'] == '1900/1'
 
+
 def test_multiple_cases():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -23,6 +25,7 @@ c 1
 c 2
 """.splitlines()))
     assert len(cases) == 2
+
 
 def test_dates():
     p = vtr.Parser()
@@ -36,6 +39,7 @@ hd 01 Apr 1903
     case = cases[0]
     assert case['arrest_date'] == datetime.datetime(1903, 3, 30)
     assert case['hearing_date'] == datetime.datetime(1903, 4, 1)
+
 
 def test_defendant_simple():
     p = vtr.Parser()
@@ -54,6 +58,7 @@ d Charley Thomas
     assert part['middle_name'] == ''
     assert part['last_name'] == 'Thomas'
 
+
 def test_defendant_middle_initial():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -71,6 +76,7 @@ d Charley M. Thomas
     assert part['middle_name'] == 'M.'
     assert part['last_name'] == 'Thomas'
 
+
 def test_defendant_two_middle_names():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -87,6 +93,7 @@ d Charley MidA MidB Thomas
     assert part['first_name'] == 'Charley'
     assert part['middle_name'] == 'MidA MidB'
     assert part['last_name'] == 'Thomas'
+
 
 def test_defendant_note():
     p = vtr.Parser()
@@ -106,6 +113,7 @@ d William Griffith (alias William Bolton)
     assert part['last_name'] == 'Griffith'
     assert part['note'] == 'alias William Bolton'
 
+
 def test_witness_title():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -123,6 +131,7 @@ w C. A. Lambert title=Mrs.
     assert part['middle_name'] == 'A.'
     assert part['last_name'] == 'Lambert'
     assert part.get('title') == 'Mrs.'
+
 
 def test_witness_note():
     p = vtr.Parser()
@@ -143,6 +152,7 @@ w C. A. Lambert (note goes here)
     assert part.get('title') == ''
     assert part.get('note') == 'note goes here'
 
+
 def test_defense_witness_title():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -160,6 +170,7 @@ dw C. A. Lambert title=Mrs.
     assert part['middle_name'] == 'A.'
     assert part['last_name'] == 'Lambert'
     assert part.get('title') == 'Mrs.'
+
 
 def test_defendant_suffix():
     p = vtr.Parser()
@@ -179,6 +190,7 @@ d Jerry Brown suffix=Jr.
     assert part['last_name'] == 'Brown'
     assert part.get('suffix') == 'Jr.'
 
+
 def test_defendant_vehicle():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -191,6 +203,7 @@ dv abc 123
     case = cases[0]
     assert case['vehicle'] == 'abc 123'
 
+
 def test_violation():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -201,6 +214,7 @@ v 123
 """.splitlines()))
     case = cases[0]
     assert case['violation'] == '123'
+
 
 def test_violation_note():
     p = vtr.Parser()
@@ -214,6 +228,7 @@ v 123 (some additional info)
     assert case['violation'] == '123'
     assert case['violation_note'] == 'some additional info'
 
+
 def test_location():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -224,6 +239,7 @@ l College & River Streets
 """.splitlines()))
     case = cases[0]
     assert case['location'] == 'College & River Streets'
+
 
 def test_arresting_officer():
     p = vtr.Parser()
@@ -242,6 +258,7 @@ ao Hamilton
     assert part['middle_name'] == ''
     assert part['last_name'] == 'Hamilton'
 
+
 def test_plea_g():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -252,6 +269,7 @@ p g
 """.splitlines()))
     case = cases[0]
     assert case['plea'] == 'guilty'
+
 
 def test_plea_ng():
     p = vtr.Parser()
@@ -264,6 +282,7 @@ p ng
     case = cases[0]
     assert case['plea'] == 'not guilty'
 
+
 def test_plea_nc():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -274,6 +293,7 @@ p nc
 """.splitlines()))
     case = cases[0]
     assert case['plea'] == 'no contest'
+
 
 def test_plea_guilty():
     p = vtr.Parser()
@@ -286,6 +306,7 @@ p guilty
     case = cases[0]
     assert case['plea'] == 'guilty'
 
+
 def test_plea_guitly():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -297,7 +318,8 @@ p guitly
     case = cases[0]
     assert case['plea'] == 'guilty'
 
-def test_plea_ng():
+
+def test_plea_not_guilty():
     p = vtr.Parser()
     cases = list(p.parse("""
 b 1902/6
@@ -307,6 +329,7 @@ p not guilty
 """.splitlines()))
     case = cases[0]
     assert case['plea'] == 'not guilty'
+
 
 def test_case_note():
     p = vtr.Parser()
@@ -328,7 +351,8 @@ n this is a test case
 # p or pd - paid (combination fine, cost, contempt, etc.)
 # r - remitted by the mayor
 # w - days of labor
-    
+
+
 def test_sentence_rendered_fine():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -346,6 +370,7 @@ sr 5 F
     assert sr['type'] == 'fine'
     assert sr['amount'] == 5.0
     assert sr['units'] == '$'
+
 
 def test_sentence_rendered_cost():
     p = vtr.Parser()
@@ -365,6 +390,7 @@ sr 5 C
     assert sr['amount'] == 5.0
     assert sr['units'] == '$'
 
+
 def test_sentence_rendered_jail():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -382,6 +408,7 @@ sr 5 J
     assert sr['type'] == 'jail'
     assert sr['amount'] == 5.0
     assert sr['units'] == 'days'
+
 
 def test_sentence_rendered_labor():
     p = vtr.Parser()
@@ -401,6 +428,7 @@ sr 5 L
     assert sr['amount'] == 5.0
     assert sr['units'] == 'days'
 
+
 def test_sentence_rendered_labor_w():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -418,6 +446,7 @@ sr 5 W
     assert sr['type'] == 'labor'
     assert sr['amount'] == 5.0
     assert sr['units'] == 'days'
+
 
 def test_sentence_rendered_labor_months():
     p = vtr.Parser()
@@ -437,6 +466,7 @@ sr 5 M
     assert sr['amount'] == 5.0
     assert sr['units'] == 'months'
 
+
 def test_sentence_rendered_remitted():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -454,6 +484,7 @@ sr 5 R
     assert sr['type'] == 'remitted'
     assert sr['amount'] == 5.0
     assert sr['units'] == '$'
+
 
 def test_sentence_rendered_remitted_note():
     p = vtr.Parser()
@@ -474,6 +505,7 @@ sr 5 R (note goes here)
     assert sr['units'] == '$'
     assert sr['note'] == 'note goes here'
 
+
 def test_sentence_rendered_dismissed():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -492,6 +524,7 @@ sr Dismissed
     assert sr['amount'] == 0.0
     assert sr['units'] == 'unknown'
 
+
 def test_sentence_rendered_other_without_note():
     p = vtr.Parser()
     assert_raises(pyparsing.ParseException,
@@ -502,6 +535,7 @@ pg 170
 c 172
 sr o
 """.splitlines(), continueOnError=False))
+
 
 def test_sentence_rendered_other():
     p = vtr.Parser()
@@ -523,9 +557,6 @@ sr o (explain what this means)
     assert sr['note'] == 'explain what this means'
 
 
-
-
-
 def test_sentence_served_fine():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -543,6 +574,7 @@ ss 5 F
     assert ss['type'] == 'fine'
     assert ss['amount'] == 5.0
     assert ss['units'] == '$'
+
 
 def test_sentence_served_fine_note():
     p = vtr.Parser()
@@ -563,6 +595,7 @@ ss 5 F (note goes here)
     assert ss['units'] == '$'
     assert ss['note'] == 'note goes here'
 
+
 def test_sentence_served_fine_date():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -581,6 +614,7 @@ ss 5 F 1 Jan 2012
     assert ss['amount'] == 5.0
     assert ss['units'] == '$'
     assert ss['date'] == datetime.datetime(2012, 1, 1)
+
 
 def test_sentence_served_fine_date_note():
     p = vtr.Parser()
@@ -602,6 +636,7 @@ ss 5 F 1 Jan 2012 (note goes here)
     assert ss['date'] == datetime.datetime(2012, 1, 1)
     assert ss['note'] == 'note goes here'
 
+
 def test_sentence_served_cost():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -619,6 +654,7 @@ ss 5 C
     assert ss['type'] == 'fine'
     assert ss['amount'] == 5.0
     assert ss['units'] == '$'
+
 
 def test_sentence_served_jail():
     p = vtr.Parser()
@@ -638,6 +674,7 @@ ss 5 J
     assert ss['amount'] == 5.0
     assert ss['units'] == 'days'
 
+
 def test_sentence_served_labor():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -655,6 +692,7 @@ ss 5 L
     assert ss['type'] == 'labor'
     assert ss['amount'] == 5.0
     assert ss['units'] == 'days'
+
 
 def test_sentence_served_labor_w():
     p = vtr.Parser()
@@ -674,6 +712,7 @@ ss 5 W
     assert ss['amount'] == 5.0
     assert ss['units'] == 'days'
 
+
 def test_sentence_served_labor_months():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -691,6 +730,7 @@ ss 5 M
     assert ss['type'] == 'labor'
     assert ss['amount'] == 5.0
     assert ss['units'] == 'months'
+
 
 def test_sentence_served_remitted():
     p = vtr.Parser()
@@ -710,6 +750,7 @@ ss 5 R
     assert ss['amount'] == 5.0
     assert ss['units'] == '$'
 
+
 def test_sentence_served_remitted_note():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -728,6 +769,7 @@ ss 5 R (note goes here)
     assert ss['amount'] == 5.0
     assert ss['units'] == '$'
     assert ss['note'] == 'note goes here'
+
 
 def test_sentence_served_other():
     p = vtr.Parser()
@@ -749,8 +791,6 @@ ss o (explain what this means)
     assert ss['note'] == 'explain what this means'
 
 
-
-
 def test_sentence_contempt():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -769,6 +809,7 @@ sc 5
     assert sc['amount'] == 5.0
     assert sc['units'] == '$'
 
+
 def test_sentence_contempt_type_fine():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -786,6 +827,7 @@ sc 5 F
     assert sc['type'] == 'fine'
     assert sc['amount'] == 5.0
     assert sc['units'] == '$'
+
 
 def test_sentence_contempt_type_labor():
     p = vtr.Parser()
@@ -806,7 +848,6 @@ sc 5 W
     assert sc['units'] == 'days'
 
 
-
 def test_outcome_guilty():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -817,6 +858,7 @@ o g
 """.splitlines()))
     case = cases[0]
     assert case['outcome'] == 'guilty'
+
 
 def test_outcome_guilty_verbose():
     p = vtr.Parser()
@@ -829,6 +871,7 @@ o guilty
     case = cases[0]
     assert case['outcome'] == 'guilty'
 
+
 def test_outcome_not_guilty():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -840,6 +883,7 @@ o ng
     case = cases[0]
     assert case['outcome'] == 'not guilty'
 
+
 def test_outcome_not_guilty_verbose():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -850,7 +894,7 @@ o not guilty
 """.splitlines()))
     case = cases[0]
     assert case['outcome'] == 'not guilty'
-    
+
 
 def test_outcome_dismissed():
     p = vtr.Parser()
@@ -863,6 +907,7 @@ o d
     case = cases[0]
     assert case['outcome'] == 'dismissed'
 
+
 def test_outcome_dismissed_verbose():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -874,6 +919,7 @@ o dismissed
     case = cases[0]
     assert case['outcome'] == 'dismissed'
 
+
 def test_outcome_suspended():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -884,6 +930,7 @@ o s
 """.splitlines()))
     case = cases[0]
     assert case['outcome'] == 'suspended'
+
 
 def test_outcome_suspended_verbose():
     p = vtr.Parser()
@@ -897,7 +944,6 @@ o suspended
     assert case['outcome'] == 'suspended'
 
 
-
 def test_gender_male():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -908,6 +954,7 @@ g m
 """.splitlines()))
     case = cases[0]
     assert case['gender'] == 'm'
+
 
 def test_gender_female():
     p = vtr.Parser()
@@ -932,6 +979,7 @@ r w
     case = cases[0]
     assert case['race'] == 'w'
 
+
 def test_race_white_upper():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -942,6 +990,7 @@ r W
 """.splitlines()))
     case = cases[0]
     assert case['race'] == 'w'
+
 
 def test_race_colored():
     p = vtr.Parser()
@@ -954,6 +1003,7 @@ r c
     case = cases[0]
     assert case['race'] == 'c'
 
+
 def test_race_colored_upper():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -964,6 +1014,7 @@ r C
 """.splitlines()))
     case = cases[0]
     assert case['race'] == 'c'
+
 
 def test_multiple_cases_complete():
     p = vtr.Parser()
@@ -1052,6 +1103,7 @@ o dismissed
 """.splitlines())
     assert len(list(cases)) == 5
 
+
 def test_multiple_cases_in_multiple_books():
     p = vtr.Parser()
     cases = p.parse("""
@@ -1061,6 +1113,7 @@ b 1900/2
 c 2
 """.splitlines())
     assert len(list(cases)) == 2
+
 
 def test_other_person_simple():
     p = vtr.Parser()
