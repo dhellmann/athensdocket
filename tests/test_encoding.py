@@ -35,3 +35,11 @@ def test_fields():
 
 def test_encoders():
     assert encodings.ENCODERS
+
+
+def test_normalize_case():
+    assert encodings.normalize('ABC') == ['abc']
+
+
+def test_normalize_punctuation():
+    assert encodings.normalize('A.B.C.') == ['abc']
