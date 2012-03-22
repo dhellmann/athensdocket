@@ -410,6 +410,35 @@ sr 5 J
     assert sr['units'] == 'days'
 
 
+def test_sentence_rendered_jail2():
+    p = vtr.Parser()
+    cases = list(p.parse("""
+b 1907/15
+pg 33
+c 1160
+ad 11 Dec 1907
+hd 12 Dec 1907
+d Bob Williams
+r W
+v 360
+l Broad st.
+ao R. A. Burpee
+w R. A. Burpee
+p G
+sr J ("that the Def be confined in the City Prison until Dec. 31st 1907 until 7 O clock P. M.")
+""".splitlines()))
+    case = cases[0]
+    try:
+        assert len(case['sentence_rendered']) == 1
+    except KeyError:
+        assert False, 'No sentence rendered found'
+    sr = case['sentence_rendered'][0]
+    assert sr['type'] == 'jail'
+    assert sr['amount'] == 0.0
+    assert sr['units'] == 'days'
+    assert sr['note'] == '"that the Def be confined in the City Prison until Dec. 31st 1907 until 7 O clock P. M."'
+
+
 def test_sentence_rendered_labor():
     p = vtr.Parser()
     cases = list(p.parse("""
@@ -527,7 +556,7 @@ sr Dismissed
 
 def test_sentence_rendered_other_without_note():
     p = vtr.Parser()
-    assert_raises(pyparsing.ParseException,
+    assert_raises(ValueError,
                   list,
                   p.parse("""
 b 1902/6

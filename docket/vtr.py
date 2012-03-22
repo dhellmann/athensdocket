@@ -22,10 +22,13 @@ log = logging.getLogger(__name__)
 
 
 def show_parse_action(f):
+    """Decorator to show what is going on in a parse action.
+    """
     def action(*args):
         if len(args) >= 3:
             s, loc, toks = args[-3:]
-            log.debug('%s(%r, %s, %s)', f.func_name, s[loc:], loc, toks)
+            log.debug('%s(s=%r, loc=%s, toks=%s)',
+                      f.func_name, s[loc:], loc, toks)
         else:
             log.debug('%s%r', f.func_name, args)
         result = f(*args)
@@ -148,13 +151,16 @@ PLEA = (mk_keyword('p') +
 PAGE = (mk_keyword('pg') + Word(nums).setResultsName('number')).setName('page')
 RACE = (mk_keyword('r') + oneOf('w c', caseless=True)).setName('race')
 SENTENCE_RENDERED = (mk_keyword('sr') + (
-    (Word(nums + '.').setResultsName('amount')
-     + Optional(SENTENCE_TYPE).setResultsName('type1')
-     + Optional(NOTE).setResultsName('note1')
-     )
+    # "other" with a note
+    (CaselessLiteral('o').setResultsName('type3') +
+     NOTE.setResultsName('note2'))
+    # simple full word renderings
     | oneOf('guilty dismissed pd', caseless=True).setResultsName('type2')
-    | (CaselessLiteral('o').setResultsName('type3') +
-       NOTE.setResultsName('note2'))
+    # optional amount, type, & note
+    | (Optional(Word(nums + '.')).setResultsName('amount')
+       + Optional(SENTENCE_TYPE).setResultsName('type1')
+       + Optional(NOTE).setResultsName('note1')
+       )
     )).setName('sentence-rendered')
 SENTENCE_SERVED = (mk_keyword('ss')
                    + Optional(Word(nums + '.').setResultsName('amount'))
@@ -347,7 +353,6 @@ class Parser(object):
         else:
             found_sent_type = 'unknown'
             note = ''
-        log.debug('here')
 
         converted_sent_type, sent_units = self.SENTENCE_TYPES.get(
             found_sent_type,
@@ -358,6 +363,10 @@ class Parser(object):
                     'amount': amount,
                     'note': note,
                     }
+
+        if converted_sent_type == 'other' and not note:
+            raise ValueError('Invalid sentence rendered, no note for "other"')
+
         self.case['sentence_rendered'].append(new_sent)
 
     @show_parse_action
@@ -425,7 +434,7 @@ class Parser(object):
             if line:
                 try:
                     self.case_record_parser.parseString(line)
-                except ParseException as err:
+                except (ParseException, ValueError) as err:
                     self.errors.append((num, line, unicode(err)))
                     log.error('Parse error processing %r: %s', line, err)
                     if not continueOnError:
