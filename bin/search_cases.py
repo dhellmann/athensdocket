@@ -3,9 +3,9 @@
 """
 
 import argparse
+import datetime
 import logging
 import os
-import pprint
 import sys
 
 from pymongo import Connection
@@ -42,6 +42,14 @@ def main():
                         default=None,
                         help='Last name',
                         )
+    parser.add_argument('-s', '--start', dest='start_date', action='store',
+                        default=None,
+                        help='Start date for cases (inclusive) as YYYY-MM-DD',
+                        )
+    parser.add_argument('-S', '--stop', dest='stop_date', action='store',
+                        default=None,
+                        help='Stop date for cases (inclusive) as YYYY-MM-DD',
+                        )
     parser.add_argument('-e', '--encoding', dest='encoding', action='store',
                         default='normalized',
                         choices=sorted(ENCODERS.keys()),
@@ -67,32 +75,37 @@ def main():
     query = {}
     encoder = ENCODERS[args.encoding]
     if args.first:
-        query['participants.first_name_%s' % args.encoding] = encoder(args.first)
+        key = 'participants.first_name_%s' % args.encoding
+        query[key] = encoder(args.first)
     if args.middle:
-        query['participants.middle_name_%s' % args.encoding] = encoder(args.middle)
+        key = 'participants.middle_name_%s' % args.encoding
+        query[key] = encoder(args.middle)
     if args.last:
-        query['participants.last_name_%s' % args.encoding] = encoder(args.last)
+        key = 'participants.last_name_%s' % args.encoding
+        query[key] = encoder(args.last)
+    if args.start_date:
+        start = datetime.datetime.strptime(args.start_date, '%Y-%m-%d')
+        ad = query.setdefault('arrest_date', {})
+        ad['$gte'] = start
+    if args.stop_date:
+        stop = datetime.datetime.strptime(args.stop_date, '%Y-%m-%d')
+        ad = query.setdefault('arrest_date', {})
+        ad['$lte'] = stop
+
+    log.debug('query=%r', query)
 
     if not query:
-        log.error('Provide at least one of --first, --middle, or --last')
+        log.error('Provide at least one search parameter')
         return 1
-    fields = {'load_job_id': 1,
-              'first_name': 1,
-              'middle_name': 1,
-              'last_name': 1,
-              }
-    fields.update(query)
 
     conn = Connection()
     db = getattr(conn, args.database)
+    results = db.cases.find(query)
 
-    log.debug(query)
-
-    results = db.cases.find(query).sort([('_id', 1)])
     n = 0
-    for case in results:
-        #pprint.pprint(case)
+    for case in results.sort([('_id', 1)]):
         print case['_id']
+        print ' %s' % case['arrest_date'].date()
         for p in case['participants']:
             print ' %(full_name)s (%(role)s)' % p
         print
