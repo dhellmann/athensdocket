@@ -79,11 +79,14 @@ def parse_participant(s, loc, toks):
                         'full_name': toks['fullname'].strip(),
                         'note': toks.get('note', [''])[0],
                         'title': toks.get('title', ''),
+                        'alias': toks.get('alias', ''),
                         'suffix': toks.get('suffix', ''),
                         }
     return new_participant
 NAME_CHARS = alphas + '.<>[]{},'
 NAME = (Regex(r'([^(=]+(\s+|$))+').setResultsName('fullname')
+        + Optional(CaselessLiteral('alias=') +
+                   Word(NAME_CHARS).setResultsName('alias'))
         + Optional(CaselessLiteral('title=') +
                    Word(NAME_CHARS).setResultsName('title'))
         + Optional(CaselessLiteral('suffix=') +

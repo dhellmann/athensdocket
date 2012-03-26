@@ -133,6 +133,25 @@ w C. A. Lambert title=Mrs.
     assert part.get('title') == 'Mrs.'
 
 
+def test_witness_alias():
+    p = vtr.Parser()
+    cases = list(p.parse("""
+b 1902/6
+pg 147
+c 103
+w C. A. Lambert alias=AliasGoesHere
+""".splitlines()))
+    case = cases[0]
+    assert len(case['participants']) == 1
+    part = case['participants'][0]
+    assert part['role'] == 'witness'
+    assert part['full_name'] == 'C. A. Lambert'
+    assert part['first_name'] == 'C.'
+    assert part['middle_name'] == 'A.'
+    assert part['last_name'] == 'Lambert'
+    assert part.get('alias') == 'AliasGoesHere'
+
+
 def test_witness_note():
     p = vtr.Parser()
     cases = list(p.parse("""
