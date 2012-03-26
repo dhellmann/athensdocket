@@ -422,6 +422,24 @@ class Parser(object):
         "Other person"
         self.add_participant('other', toks[0])
 
+    def validate_case(self, case, line_num):
+        defendants = [p
+                      for p in case['participants']
+                      if p['role'] == 'defendant'
+                      ]
+        if not defendants:
+            self.errors.append((line_num,
+                                '',
+                                'No defendant found for %s' % case['number'],
+                                )
+                               )
+        return
+
+    def prepare_case(self, case, line_num):
+        """Validate and fill in default values for a case.
+        """
+        # Look for validation warnings
+        self.validate_case(case, line_num)
     def parse(self, lines, continueOnError=True):
         """The public API.
 
@@ -437,17 +455,19 @@ class Parser(object):
             if line:
                 try:
                     self.case_record_parser.parseString(line)
+                    if self.next_case:
+                        self.prepare_case(self.next_case, num)
+                        yield self.next_case
+                        self.next_case = None
                 except (ParseException, ValueError) as err:
                     self.errors.append((num, line, unicode(err)))
                     log.error('Parse error processing %r: %s', line, err)
                     if not continueOnError:
                         raise
                     continue
-                if self.next_case:
-                    yield self.next_case
-                    self.next_case = None
         # Make sure we yield the last case in the input
         if self.case:
+            self.prepare_case(self.case, num)
             yield self.case
 
 if __name__ == '__main__':
