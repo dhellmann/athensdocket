@@ -1,8 +1,6 @@
 """Tests for the validation code in the VTR parser.
 """
 
-from nose.tools import assert_raises
-
 from docket import vtr
 
 
