@@ -1179,3 +1179,28 @@ op Charley Thomas
     assert part['first_name'] == 'Charley'
     assert part['middle_name'] == ''
     assert part['last_name'] == 'Thomas'
+
+
+def test_note():
+    p = vtr.Parser()
+    cases = list(p.parse("""
+b 1900/1
+pg 170
+c 172
+n note 1
+""".splitlines()))
+    assert len(cases) == 1
+    assert cases[0]['note'] == 'note 1'
+
+
+def test_note_multiple_lines():
+    p = vtr.Parser()
+    cases = list(p.parse("""
+b 1900/1
+pg 170
+c 172
+n note 1
+n note 2
+""".splitlines()))
+    assert len(cases) == 1
+    assert cases[0]['note'] == 'note 1\nnote 2'

@@ -314,7 +314,7 @@ class Parser(object):
     @show_parse_action
     def feed_n(self, s, loc, toks):
         "Case note"
-        self.case['note'] = toks['note']
+        self.case.setdefault('note', []).append(toks['note'])
 
     @show_parse_action
     def feed_o(self, s, loc, toks):
@@ -440,6 +440,20 @@ class Parser(object):
         """
         # Look for validation warnings
         self.validate_case(case, line_num)
+        # Set default values for dates
+        for sentence in case.get('sentences', []):
+            if (not sentence.get('date')) and case.get('hearing_date'):
+                sentence['date'] = case['hearing_date']
+        # Set the year for the case
+        ad = case.get('arrest_date')
+        case['year'] = (ad.date().year
+                        if ad
+                        else int(case['book'].split('/')[0])
+                        )
+        # Merge the notes
+        case['note'] = '\n'.join(case.get('note', []))
+        return
+
     def parse(self, lines, continueOnError=True):
         """The public API.
 
