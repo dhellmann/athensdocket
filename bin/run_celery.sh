@@ -9,9 +9,14 @@ mkdir -p $LOGDIR
 
 if [ -f $PIDFILE ]
 then
-	kill $(cat $PIDFILE)
-	wait $(cat $PIDFILE)
+	pid=$(cat $PIDFILE)
+	if [ ! -z "$pid" ]
+	then
+		echo "Trying to kill $pid"
+		kill $pid
+	fi
 	rm -f $PIDFILE
 fi
 
 nohup /home/docket/env/bin/celeryd -f $LOGDIR/celery.log -l INFO --pidfile $PIDFILE &
+echo "Running $(cat $PIDFILE)"
