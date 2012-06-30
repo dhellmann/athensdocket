@@ -14,6 +14,7 @@ then
 	then
 		echo "Trying to kill $pid"
 		kill $pid
+		ps -elf | grep celery
 		sleep 10
 	fi
 fi
