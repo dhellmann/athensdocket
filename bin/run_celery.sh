@@ -19,6 +19,11 @@ then
 	fi
 fi
 
+# Move directories so we can find the docket code and celery config
+# file
+cd /home/docket/athensdocket
+
+# Start the daemon
 nohup /home/docket/env/bin/celeryd -f $LOGDIR/celery.log -l INFO --pidfile $PIDFILE &
 
 for i in 1 2 3 4 5
