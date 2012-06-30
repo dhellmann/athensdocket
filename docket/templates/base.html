@@ -26,8 +26,8 @@
             <ul class="nav">
               <li class="{% if g.navbar_active == 'index' %}active{% endif %}"><a href="{{ url_for('index') }}"">Home</a></li>
               <li class="{% if g.navbar_active == 'about' %}active{% endif %}"><a href="{{url_for('about')}}">About</a></li>
-              <li class="{% if g.navbar_active == 'search' %}active{% endif
-              %}"><a href="{{url_for('search')}}">Search</a></li>
+              <li class="{% if g.navbar_active == 'browse' %}active{% endif %}"><a href="{{url_for('browse')}}">Browse</a></li>
+              <li class="{% if g.navbar_active == 'search' %}active{% endif %}"><a href="{{url_for('search')}}">Search</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>

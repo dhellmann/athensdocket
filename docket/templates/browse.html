@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Browse{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+  <div class="row-fluid">
+    <div class="span12">
+      <h1 id="date">By Date</h1>
+      <ul>
+        {% for y in years %}
+        <li>{{y}}</li>
+        {% endfor %}
+      </ul>
+    </div><!--/span-->
+  </div><!--/row-->
+
+  <div class="row-fluid">
+    <div class="span12">
+      <h1 id="date">By Violation</h1>
+      <ul>
+        {% for v in violations %}
+        <li>{{v.code}} -- {{v.summary}}</li>
+        {% endfor %}
+      </ul>
+    </div><!--/span-->
+  </div><!--/row-->
+
+</div>
+
+{% endblock %}
