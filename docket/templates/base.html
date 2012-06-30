@@ -24,9 +24,10 @@
           <a class="brand" href="{{ url_for('index') }}"">Athens Docket Project</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="{{ url_for('index') }}"">Home</a></li>
-              <li><a href="{{url_for('about')}}">About</a></li>
-              <li><a href="{{url_for('search')}}">Search</a></li>
+              <li class="{% if g.navbar_active == 'index' %}active{% endif %}"><a href="{{ url_for('index') }}"">Home</a></li>
+              <li class="{% if g.navbar_active == 'about' %}active{% endif %}"><a href="{{url_for('about')}}">About</a></li>
+              <li class="{% if g.navbar_active == 'search' %}active{% endif
+              %}"><a href="{{url_for('search')}}">Search</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
