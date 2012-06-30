@@ -1,45 +1,7 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- based on http://twitter.github.com/bootstrap/examples/fluid.html -->
-    <meta charset="utf-8">
-    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
-    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
-    <title>Athens Docket Project</title>
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block title %}Athens Docket Project{% endblock %}
 
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="{{ url_for('index') }}"">Athens Docket Project</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="active"><a href="{{ url_for('index') }}"">Home</a></li>
-              <li><a href="{{url_for('about')}}">About</a></li>
-              <li><a href="{{url_for('search')}}">Search</a></li>
-              <li><a href="http://www.clarke.public.lib.ga.us/hqdepts/heritage/index.html">ARLS:HR</a></li>
-              <li><a href="#contact">Contact</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-
+{% block content %}
     <div class="container-fluid">
       <div class="row-fluid">
 
@@ -60,21 +22,4 @@
           </div>
         </div><!--/span-->
       </div><!--/row-->
-
-      <hr>
-
-      <footer>
-        <p>&copy; 2012 Athens Regional Library System Heritage Room</p>
-      </footer>
-
-    </div><!--/.fluid-container-->
-
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
-
-
-  </body>
-</html>
+{% endblock %}

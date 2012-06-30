@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- based on http://twitter.github.com/bootstrap/examples/fluid.html -->
+    <meta charset="utf-8">
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
+    <title>{% block title %}Athens Docket Project{% endblock %}</title>
+  </head>
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="{{ url_for('index') }}"">Athens Docket Project</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="{{ url_for('index') }}"">Home</a></li>
+              <li><a href="{{url_for('about')}}">About</a></li>
+              <li><a href="{{url_for('search')}}">Search</a></li>
+              <li><a href="http://www.clarke.public.lib.ga.us/hqdepts/heritage/index.html">ARLS:HR</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+{% block content %}
+    <div class="container-fluid">
+      <div class="row-fluid">
+
+        <div class="span12">
+          <div class="hero-unit">
+            <h1>Missing Content Block</h1>
+            <p>This page does not have a content block, yet.</p>
+          </div>
+        </div><!--/span-->
+      </div><!--/row-->
+{% endblock %}
+
+      <hr>
+
+      <footer>
+        <p>&copy; 2012 Athens Regional Library System Heritage Room</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
+
+  </body>
+</html>
