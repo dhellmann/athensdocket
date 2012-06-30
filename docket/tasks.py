@@ -70,13 +70,26 @@ def store_case_in_database(case, load_job_id, db_factory, error_handler):
     # associate the case record with the job for auditing
     case['load_job_id'] = load_job_id
     log.info('storing %s', case['_id'])
+    db = db_factory()
     try:
-        db = db_factory()
         db.cases.update({'_id': case['_id']},
                         case,
-                        True,  # upsert
-                        False,
+                        upsert=True,
                         )
     except Exception as err:
         log.error('Could not store case %s: %s', case['_id'], err)
+        error_handler(unicode(err))
+    try:
+        db.books.update({'book_id': case['book']},
+                        {'$set': {'book_id': case['book'],
+                                  'year': int(case['book'].split('/')[0]),
+                                  'number': case['book'].split('/')[1],
+                                  },
+                         '$addToSet': {'load_jobs': load_job_id,
+                                       },
+                         },
+                        upsert=True,
+                        )
+    except Exception as err:
+        log.error('Could not store book %s: %s', case['book'], err)
         error_handler(unicode(err))
