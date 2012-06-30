@@ -14,8 +14,8 @@ then
 	then
 		echo "Trying to kill $pid"
 		kill $pid
+		sleep 10
 	fi
-	rm -f $PIDFILE
 fi
 
 nohup /home/docket/env/bin/celeryd -f $LOGDIR/celery.log -l INFO --pidfile $PIDFILE &
