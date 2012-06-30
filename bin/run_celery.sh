@@ -19,4 +19,16 @@ then
 fi
 
 nohup /home/docket/env/bin/celeryd -f $LOGDIR/celery.log -l INFO --pidfile $PIDFILE &
-echo "Running $(cat $PIDFILE)"
+
+for i in 1 2 3 4 5
+do
+	if [ ! -f $PIDFILE ]
+	then
+		echo "waiting..."
+		sleep 10
+	else
+		echo "Running $(cat $PIDFILE)"
+		break
+	fi
+done
+
