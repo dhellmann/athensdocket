@@ -24,7 +24,7 @@ fi
 cd /home/docket/athensdocket
 
 # Start the daemon
-nohup /home/docket/env/bin/celeryd -f $LOGDIR/celery.log -l INFO --pidfile $PIDFILE &
+nohup /home/docket/env/bin/celeryd -f $LOGDIR/celery.log -l INFO --pidfile $PIDFILE -c 20 &
 
 for i in 1 2 3 4 5
 do
