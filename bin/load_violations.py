@@ -63,6 +63,10 @@ def main():
             log.info('loading codes from %s', name)
             for code in csv.DictReader(f):
                 log.debug('code %(_id)s: %(summary)s', code)
+                try:
+                    code['code'] = int(code['_id'])
+                except (TypeError, ValueError):
+                    code['code'] = code['_id']
                 violation_codes.update(
                     {'_id': code['_id']},
                     code,
