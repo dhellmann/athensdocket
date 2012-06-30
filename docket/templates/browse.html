@@ -2,31 +2,40 @@
 {% block title %}Browse{% endblock %}
 
 {% block content %}
-
 <div class="container-fluid">
 
-  <div class="row-fluid">
-    <div class="span12">
-      <h1 id="date">By Date</h1>
-      <ul>
-        {% for y in years %}
-        <li>{{y}}</li>
-        {% endfor %}
-      </ul>
-    </div><!--/span-->
-  </div><!--/row-->
+<div class="row">
 
-  <div class="row-fluid">
-    <div class="span12">
-      <h1 id="date">By Violation</h1>
-      <ul>
-        {% for v in violations %}
-        <li>{{v.code}} -- {{v.summary}}</li>
-        {% endfor %}
+  <div class="span3">
+    <div class="well sidebar-nav">
+      <ul class="nav nav-list">
+        <li class="active"><a href="#date">Date</a></li>
+        <li><a href="#violation">Violation</a></li>
       </ul>
-    </div><!--/span-->
-  </div><!--/row-->
+    </div>
+  </div>
 
-</div>
+  <div class="span9" id="date">
+    <h2>By Date</h2>
+    <ul>
+      {% for y in years %}
+      <li>{{y}}</li>
+      {% endfor %}
+    </ul>
+  </div><!--/span-->
+</div><!--/row-->
+
+<div class="row">
+  <div class="span9 offset3" id="violation">
+    <h2>By Violation</h2>
+    <ul>
+      {% for v in violations %}
+      <li>{{v.code}} -- {{v.summary}}</li>
+      {% endfor %}
+    </ul>
+  </div><!--/span-->
+</div><!--/row-->
+
+</div><!--/container-fluid-->
 
 {% endblock %}
