@@ -473,19 +473,22 @@ class Parser(object):
             log.debug(line)
             if line:
                 try:
-                    self._lines.append((num, line))
                     self.case_record_parser.parseString(line)
                     if self.next_case:
                         self.prepare_case(self.next_case, num)
                         yield self.next_case
                         self.next_case = None
-                        self._lines = []
+                        self._lines = self._lines[-1:]  # preserve the "case" line
+                    self._lines.append((num, line))
                 except (ParseException, ValueError) as err:
                     self.errors.append((num, line, unicode(err)))
                     log.error('Parse error processing %r: %s', line, err)
                     if not continueOnError:
                         raise
                     continue
+            else:
+                self._lines.append((num, line))
+
         # Make sure we yield the last case in the input
         if self.case:
             self.prepare_case(self.case, num)
