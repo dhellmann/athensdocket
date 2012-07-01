@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Code {{violation.code}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="page-header">
+    <h1>Code {{violation._id}} <small>{{violation.summary}}</small></h1>
+  </div>
+
+  <div class="well">
+    <p>{{violation.description}}</p>
+  </div>
+
+</div>
+{% endblock %}

@@ -4,53 +4,58 @@
 {% block content %}
 <div class="container-fluid">
 
-<div class="tabbable">
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#date" data-toggle="tab">Date</a></li>
-    <li><a href="#violation" data-toggle="tab">Violations</a></li>
-  </ul>
+  <div class="page-header">
+    <h1>Browse</h1>
+  </div>
+  
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#date" data-toggle="tab">Cases by Date</a></li>
+      <li><a href="#code" data-toggle="tab">Codes</a></li>
+    </ul>
+    
+    <div class="tab-content">
+      <div class="tab-pane active" id="date">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Year</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for y in years %}
+            <tr>
+              <td>
+                <a href="{{ url_for('browse_date', year=y) }}">{{y}}</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div><!--/tab-pane-->
 
-  <div class="tab-content">
-    <div class="tab-pane active" id="date">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Year</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for y in years %}
-          <tr>
-            <td>
-              <a href="{{ url_for('browse_date', year=y) }}">{{y}}</a>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div><!--/tab-pane-->
+      <div class="tab-pane" id="code">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in violations %}
+            <tr>
+              <td><a href="{{ url_for('code', code=v.code) }}">{{v.code}}</a></td>
+              <td>{{v.summary}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div><!--/tab-pane-->
 
-    <div class="tab-pane" id="violation">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Violation</th>
-            <th>Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for v in violations %}
-        <tr>
-          <td><a href="{{ url_for('violation', code=v.code) }}">{{v.code}}</a></td>
-          <td>{{v.summary}}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div><!--/tab-pane-->
+    </div><!--/tab-content-->
 
-  </div><!--/tab-content-->
+  </div><!--/tabbable-->
 
-</div><!--/tabbable-->
-
+</div><!--/container-->
 {% endblock %}

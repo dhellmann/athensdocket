@@ -99,10 +99,10 @@ def case(caseid):
                            )
 
 
-@app.route('/violation/<code>')
-def violation(code):
+@app.route('/code/<code>')
+def code(code):
     violation = mongo.db.violation_codes.find_one({'_id': code})
-    return render_template('violation.html',
+    return render_template('code.html',
                            violation=violation,
                            )
 
