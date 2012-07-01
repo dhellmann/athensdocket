@@ -1,3 +1,4 @@
+import calendar
 import datetime
 import functools
 
@@ -8,6 +9,11 @@ app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'docket'
 mongo = PyMongo(app)
+
+
+@app.template_filter('date')
+def date(d):
+    return d.strftime('%Y-%m-%d')
 
 
 def set_navbar_active(f):
@@ -49,20 +55,39 @@ def browse():
                            )
 
 
-@app.route('/browse/year/<int:year>')
-def browse_year(year):
+@app.route('/browse/date/<int:year>')
+@app.route('/browse/date/<int:year>/<int:month>')
+@app.route('/browse/date/<int:year>/<int:month>/<int:day>')
+def browse_date(year, month=None, day=None):
     g.navbar_active = 'browse'
-    first_day = datetime.datetime(year, 1, 1, 0, 0, 0)
-    last_day = datetime.datetime(year + 1, 1, 1, 0, 0, 0)
+    if month and day:
+        first_day = datetime.datetime(year, month, day, 0, 0, 0)
+        last_day = first_day + datetime.timedelta(days=1)
+        date_range = date(first_day)
+    elif month:
+        first_day = datetime.datetime(year, month, 1, 0, 0, 0)
+        weekday, num_days = calendar.monthrange(year, month)
+        last_day = first_day + datetime.timedelta(days=num_days)
+        date_range = '%s-%02d' % (year, month)
+    elif year:
+        first_day = datetime.datetime(year, 1, 1, 0, 0, 0)
+        last_day = datetime.datetime(year + 1, 1, 1, 0, 0, 0)
+        date_range = unicode(year)
+    else:
+        raise ValueError('Invalid date')
+    app.logger.debug('first_day=%s, last_day=%s', first_day, last_day)
     cases = mongo.db.cases.find({'arrest_date': {'$gte': first_day,
                                                  '$lt': last_day,
                                                  },
                                  },
                                 sort=[('arrest_date', ASCENDING)],
                                 )
-    return render_template('browse_year.html',
-                           year=year,
+    return render_template('browse_date.html',
+                           date_range=date_range,
                            cases=cases,
+                           year=year,
+                           month=month,
+                           day=day,
                            )
 
 

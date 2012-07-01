@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Browse by date: {{date_range}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+<h2>Browse by date:  {% if month %}<a href="{{url_for('browse_date', year=year)}}">{{year}}</a>{%- else %}{{year}}{% endif %}{%- if day %}-<a href="{{url_for('browse_date', year=year, month=month)}}">{{'%02d'|format(month)}}</a>{% elif month %}-{{'%02d'|format(month)}}{% endif %}{%- if day %}-{{'%02d'|format(day)}}{% endif %}
+</h2>
+
+<div class="row-fluid">
+<div class="span8 offset2">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Case Number</th>
+        <th>Arrest Date</th>
+        <th>Defendant</th>
+        <th>Violation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr>
+        <td><a href="{{ url_for('case', caseid=case._id) }}">{{case.number}}</a></td>
+        <td><a href="{{ url_for('browse_date',
+                     year=case.arrest_date.year, 
+                     month=case.arrest_date.month, 
+                     day=case.arrest_date.day)}}">{{case.arrest_date|date}}</a></td>
+        <td>{{case.defendant}}</td>
+        <td>{{case.violation}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+
+{% endblock %}
