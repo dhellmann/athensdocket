@@ -25,6 +25,15 @@
                        year=case.hearing_date.year,
                        month=case.hearing_date.month) }}">Other cases
                        heard that month</a></li>
+          {% if cases_on_page %}
+          <li class="nav-header">Cases on page
+          {{case.page}}</li>
+          {% for other_case in cases_on_page %}
+          <li><a href="{{ url_for('case', caseid=other_case._id) }}">{{other_case.number}} -
+          {{other_case.defendant}} ({{other_case.violation}})</a>
+          </li>
+          {% endfor %}
+          {% endif %}
         </ul>
       </div>
     </div>

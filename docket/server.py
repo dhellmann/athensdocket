@@ -109,9 +109,15 @@ def browse_date(year, month=None, day=None):
 def case(caseid):
     case = mongo.db.cases.find_one({'_id': caseid})
     violation = mongo.db.violation_codes.find_one({'_id': case['violation']})
+    cases_on_page = mongo.db.cases.find({'book': case['book'],
+                                         'page': case['page'],
+                                         },
+                                        sort=[('_id', ASCENDING)],
+                                        )
     return render_template('case.html',
                            case=case,
                            violation=violation,
+                           cases_on_page=cases_on_page,
                            )
 
 
