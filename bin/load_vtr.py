@@ -83,25 +83,11 @@ def main():
 
         error_handler = db.ErrorHandler(db_factory, job_id, name)
 
-        store_task = tasks.store_case_in_database.subtask(
-            kwargs={'db_factory': db_factory,
-                    'error_handler': error_handler,
-                    'load_job_id': job_id,
-                    },
-            )
-
-        encode_task = tasks.add_encodings_for_names.subtask(
-            kwargs={'db_factory': db_factory,
-                    'error_handler': error_handler,
-                    'callback': store_task,
-                    },
-            )
-
         parse_task = tasks.parse_file.delay(
             filename=os.path.abspath(name),
             db_factory=db_factory,
+            load_job_id=job_id,
             error_handler=error_handler,
-            callback=encode_task,
             )
 
         task_results.append((name, parse_task))

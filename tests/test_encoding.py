@@ -21,7 +21,6 @@ def test():
          'number': '0',
          }
     tasks.add_encodings_for_names(c,
-                                  db_factory=Mock,
                                   error_handler=errors.append,
                                   )
     for field in tasks.FIELDS_TO_ENCODE:
