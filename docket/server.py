@@ -19,6 +19,14 @@ def date(d):
         return ''
 
 
+@app.template_filter('month')
+def month(d):
+    if d:
+        return d.strftime('%B')
+    else:
+        return ''
+
+
 @app.template_filter('sentence_amount')
 def sentence_amount(s):
     if not s['amount']:

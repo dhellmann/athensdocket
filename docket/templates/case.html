@@ -18,13 +18,13 @@
           <li><a href="{{ url_for('browse_date',
                        year=case.hearing_date.year,
                        month=case.hearing_date.month,
-                       day=case.hearing_date.day) }}">Other cases
+                       day=case.hearing_date.day) }}">Cases
                        heard that day</a>
           </li>
           <li><a href="{{ url_for('browse_date',
                        year=case.hearing_date.year,
-                       month=case.hearing_date.month) }}">Other cases
-                       heard that month</a></li>
+                       month=case.hearing_date.month) }}">
+                       Cases heard in {{case.hearing_date|month}} of {{case.hearing_date.year}}</a></li>
           {% if cases_on_page %}
           <li class="nav-header">Cases on page
           {{case.page}}</li>
