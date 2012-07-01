@@ -244,6 +244,7 @@ class Parser(object):
                      'sentence_rendered': [],
                      'sentence_served': [],
                      'sentence_contempt': [],
+                     'defendant': '',
                      }
 
     @show_parse_action
@@ -267,6 +268,7 @@ class Parser(object):
     def feed_d(self, s=None, loc=None, toks=None):
         "Defendant"
         self.add_participant('defendant', toks[0])
+        self.case['defendant'] = toks[0]['full_name']
 
     @show_parse_action
     def feed_w(self, s, loc, toks):
