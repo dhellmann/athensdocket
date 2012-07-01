@@ -13,7 +13,10 @@ mongo = PyMongo(app)
 
 @app.template_filter('date')
 def date(d):
-    return d.strftime('%Y-%m-%d')
+    if d:
+        return d.strftime('%Y-%m-%d')
+    else:
+        return ''
 
 
 @app.template_filter('sentence_amount')
