@@ -4,11 +4,33 @@
 {% block content %}
 <div class="container-fluid">
 
-<h2>Browse by date:  {% if month %}<a href="{{url_for('browse_date', year=year)}}">{{year}}</a>{%- else %}{{year}}{% endif %}{%- if day %}-<a href="{{url_for('browse_date', year=year, month=month)}}">{{'%02d'|format(month)}}</a>{% elif month %}-{{'%02d'|format(month)}}{% endif %}{%- if day %}-{{'%02d'|format(day)}}{% endif %}
-</h2>
+<h2>Browse by date</h2>
 
 <div class="row-fluid">
 <div class="span8 offset2">
+
+<ul class="breadcrumb">
+  <li><a href="{{ url_for('browse') }}">Browse</a> <span class="divider">/</span></li>
+  <li>
+  {%- if month %}
+  <a href="{{url_for('browse_date', year=year)}}">{{year}}</a> <span class="divider">/</span>
+  {% else %} 
+  {{year}}
+  {% endif %}
+  </li>
+  {%- if day %}
+  <li>
+    <a href="{{url_for('browse_date', year=year,
+    month=month)}}">{{'%02d'|format(month)}}</a>  <span class="divider">/</span>
+  </li>
+  {% elif month %}
+  <li>{{'%02d'|format(month)}}</li>
+  {% endif %}
+  {%- if day %}
+  <li>{{'%02d'|format(day)}}</li>
+  {% endif %}
+</ul>
+
   <table class="table table-striped">
     <thead>
       <tr>
