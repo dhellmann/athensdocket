@@ -76,11 +76,11 @@ def browse_date(year, month=None, day=None):
     else:
         raise ValueError('Invalid date')
     app.logger.debug('first_day=%s, last_day=%s', first_day, last_day)
-    cases = mongo.db.cases.find({'arrest_date': {'$gte': first_day,
+    cases = mongo.db.cases.find({'hearing_date': {'$gte': first_day,
                                                  '$lt': last_day,
                                                  },
                                  },
-                                sort=[('arrest_date', ASCENDING)],
+                                sort=[('hearing_date', ASCENDING)],
                                 )
     return render_template('browse_date.html',
                            date_range=date_range,
