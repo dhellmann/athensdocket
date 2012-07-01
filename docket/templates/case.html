@@ -181,6 +181,7 @@
       {% endif %}
 
       {% if debug %}
+      <div class="well">
       <h3 id="debug">Debug</h3>
       <table class="table">
         <tbody>
@@ -202,7 +203,7 @@
       <pre>
 {%- for l in case.lines %}{{ '%5d | %s'|format(l[0], l[1]) }}
 {% endfor %}</pre>
-      
+      </div>
       {% endif %}
 
     </div>
