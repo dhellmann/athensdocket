@@ -6,12 +6,12 @@
 
 <div class="tabbable">
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#date-tab" data-toggle="tab">Date</a></li>
-    <li><a href="#violation-tab" data-toggle="tab">Violation</a></li>
+    <li class="active"><a href="#date" data-toggle="tab">Date</a></li>
+    <li><a href="#violation" data-toggle="tab">Violation</a></li>
   </ul>
 
   <div class="tab-content">
-    <div class="tab-pane active" id="date-tab">
+    <div class="tab-pane active" id="date">
       <ul>
         {% for y in years %}
         <li><a href="{{ url_for('browse_year', year=y) }}">{{y}}</a></li>
@@ -19,7 +19,7 @@
       </ul>
     </div><!--/tab-pane-->
 
-    <div class="tab-pane" id="violation-tab">
+    <div class="tab-pane" id="violation">
       <ul>
         {% for v in violations %}
         <li>{{v.code}} -- {{v.summary}}</li>
