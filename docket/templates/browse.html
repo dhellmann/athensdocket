@@ -7,7 +7,7 @@
 <div class="tabbable">
   <ul class="nav nav-tabs">
     <li class="active"><a href="#date" data-toggle="tab">Date</a></li>
-    <li><a href="#violation" data-toggle="tab">Violation</a></li>
+    <li><a href="#violation" data-toggle="tab">Violations</a></li>
   </ul>
 
   <div class="tab-content">
@@ -41,7 +41,7 @@
         <tbody>
         {% for v in violations %}
         <tr>
-          <td>{{v.code}}</td>
+          <td><a href="{{ url_for('violation', code=v.code) }}">{{v.code}}</a></td>
           <td>{{v.summary}}</td>
         </tr>
         {% endfor %}

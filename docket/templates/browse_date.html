@@ -27,7 +27,7 @@
                      month=case.arrest_date.month, 
                      day=case.arrest_date.day)}}">{{case.arrest_date|date}}</a></td>
         <td>{{case.defendant}}</td>
-        <td>{{case.violation}}</td>
+        <td><a href="{{ url_for('violation', code=case.violation) }}">{{case.violation}}</a></td>
       </tr>
       {% endfor %}
     </tbody>

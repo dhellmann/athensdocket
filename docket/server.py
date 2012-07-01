@@ -98,5 +98,13 @@ def case(caseid):
                            case=case,
                            )
 
+
+@app.route('/violation/<code>')
+def violation(code):
+    violation = mongo.db.violation_codes.find_one({'_id': code})
+    return render_template('violation.html',
+                           violation=violation,
+                           )
+
 if __name__ == '__main__':
     app.run('0.0.0.0', debug=True)
