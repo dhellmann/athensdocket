@@ -16,6 +16,17 @@ def date(d):
     return d.strftime('%Y-%m-%d')
 
 
+@app.template_filter('sentence_amount')
+def sentence_amount(s):
+    if not s['amount']:
+        return ''
+    if s['units'] == '$':
+        fmt = '$ %(amount)0.2f'
+    else:
+        fmt = '%(amount)d %(units)s'
+    return fmt % s
+
+
 def set_navbar_active(f):
     "Set the navbar active value to the name of the wrapped function."
     @functools.wraps(f)
@@ -94,8 +105,10 @@ def browse_date(year, month=None, day=None):
 @app.route('/case/<path:caseid>')
 def case(caseid):
     case = mongo.db.cases.find_one({'_id': caseid})
+    violation = mongo.db.violation_codes.find_one({'_id': case['violation']})
     return render_template('case.html',
                            case=case,
+                           violation=violation,
                            )
 
 

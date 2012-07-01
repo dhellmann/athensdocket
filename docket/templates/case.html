@@ -1,27 +1,176 @@
 {% extends "base.html" %}
-{% block title %}Case {{case._id}}{% endblock %}
+{% block title %}Case {{case.number}} from {{case.hearing_date.year}}
+| {{ super() }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
 
   <div class="page-header">
-    <h1>Case <small>{{case._id}}</small></h1>
+    <h1>Case <small>{{case.number}} from {{case.hearing_date.year}} :
+    {{case.defendant}} for {{violation.code}} ({{violation.summary}})</small></h1>
   </div>
 
   <div class="row-fluid">
-    <div class="span8">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Case Number</th>
-          </tr>
-        </thead>
+    <div class="span3">
+      <div class="well">
+        <ul class="nav nav-list">
+          <li class="nav-header">Browse</li>
+          <li><a href="{{ url_for('browse_date',
+                       year=case.hearing_date.year,
+                       month=case.hearing_date.month,
+                       day=case.hearing_date.day) }}">Other cases
+                       heard that day</a>
+          </li>
+          <li><a href="{{ url_for('browse_date',
+                       year=case.hearing_date.year,
+                       month=case.hearing_date.month) }}">Other cases
+                       heard that month</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="span9">
+
+      <h3 id="arrest">Arrest</h3>
+      <table class="table">
         <tbody>
           <tr>
-            <td>{{case.number}}</td>
+            <th width="15%">Date</th>
+            <td>{{case.arrest_date|date}}</td>
+          </tr>
+          <tr>
+            <th width="15%">Location</th>
+            <td>{{case.location}}</td>
+          </tr>
+          <tr>
+            <th width="15%">Violation</th>
+            <td><a href="{{ url_for('code', code=case.violation) }}"
+            rel="popover" data-original-title="{{violation.summary}}"
+            data-content="{{violation.description}}"
+            data-bitly-type="bitly_hover_card">{{case.violation}}</a></td>
+          </tr>
+          {% if case.violation_note %}
+          <tr>
+            <th width="15%">Additional Notes</th>
+            <td>{{case.violation_note}}</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <h3 id="hearing">Hearing</h3>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th width="15%">Date</th>
+            <td>{{case.hearing_date|date}}</td>
+          </tr>
+          <tr>
+            <th width="15%">Plea</th>
+            <td>{{case.plea}}</td>
+          </tr>
+          <tr>
+            <th width="15%">Outcome</th>
+            <td>{{case.outcome}}</td>
           </tr>
         </tbody>
       </table>
+
+      <h3 id="sentence_rendered">Sentence Rendered</h3>
+      {% if case.sentence_rendered %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th width="15%">Type</th>
+            <th width="10%">Amount</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sr in case.sentence_rendered %}
+          <tr>
+            <td width="15%">{{sr.type}}</td>
+            <td style="text-align: right;" width="10%">{{sr|sentence_amount}}</td>
+            <td>{{sr.note}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Unknown</p>
+      {% endif %}
+
+      <h3 id="sentence_served">Sentence Served</h3>
+      {% if case.sentence_served %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th width="15%">Type</th>
+            <th width="10%">Amount</th>
+            <th width="15%">Date</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ss in case.sentence_served %}
+          <tr>
+            <td width="15%">{{ss.type}}</td>
+            <td style="text-align: right;" width="10%">{{ss|sentence_amount}}</td>
+            <td width="15%">{{ss.date|date}}</td>
+            <td>{{ss.note}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Unknown</p>
+      {% endif %}
+
+      <h3 id="participants">People Involved in the Case</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th width="20%">Name</th>
+            <th width="20%">Role</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in case.participants %}
+          <tr>
+            <td width="20%">{{p.full_name}}</td>
+            <td width="20%">
+              {{p.role}}
+              {{p.gender}}
+              {{p.race}}
+            </td>
+            <td>{{p.notes}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h3 id="book">Docket Book</h3>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th width="15%">Volume</th>
+            <td>{{case.book}}</td>
+          </tr>
+          <tr>
+            <th width="15%">Page</th>
+            <td>{{case.page}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {% if case.notes %}
+      <h3 id="notes">Additional Notes</h3>
+      {% for n in case.notes %}
+      <p>{{n}}</p>
+      {% endfor %}
+      {% endif %}
+      
     </div>
   </div>
 
