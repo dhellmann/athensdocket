@@ -14,7 +14,7 @@
     <div class="tab-pane active" id="date-tab">
       <ul>
         {% for y in years %}
-        <li>{{y}}</li>
+        <li><a href="{{ url_for('browse_year', year=y) }}">{{y}}</a></li>
         {% endfor %}
       </ul>
     </div><!--/tab-pane-->

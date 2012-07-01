@@ -1,8 +1,8 @@
+import datetime
 import functools
-import operator
 
 from flask import Flask, render_template, g
-from flask.ext.pymongo import PyMongo
+from flask.ext.pymongo import PyMongo, ASCENDING
 
 app = Flask(__name__)
 
@@ -42,14 +42,27 @@ def search():
 def browse():
     books = mongo.db.books.find()
     years = sorted(set(b['year'] for b in books))
-
-    violations = sorted(mongo.db.violation_codes.find(),
-                        key=operator.itemgetter('code'),
-                        )
-
+    violations = mongo.db.violation_codes.find(sort=[('code', ASCENDING)])
     return render_template('browse.html',
                            years=years,
                            violations=violations,
+                           )
+
+
+@app.route('/browse/year/<int:year>')
+def browse_year(year):
+    g.navbar_active = 'browse'
+    first_day = datetime.datetime(year, 1, 1, 0, 0, 0)
+    last_day = datetime.datetime(year + 1, 1, 1, 0, 0, 0)
+    cases = mongo.db.cases.find({'arrest_date': {'$gte': first_day,
+                                                 '$lt': last_day,
+                                                 },
+                                 },
+                                sort=[('arrest_date', ASCENDING)],
+                                )
+    return render_template('browse_year.html',
+                           year=year,
+                           cases=cases,
                            )
 
 if __name__ == '__main__':

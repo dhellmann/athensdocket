@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Browse: {{year}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+<h2>Browse: {{year}}</h2>
+
+<div class="row-fluid">
+<div class="span8 offset2">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Case Number</th>
+        <th>Arrest Date</th>
+        <th>Defendant</th>
+        <th>Violation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr>
+        <td>{{case.number}}</td>
+        <td>{{case.arrest_date}}</td>
+        <td>FIND DEFENDANT</td>
+        <td>{{case.violation}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+
+{% endblock %}
