@@ -173,11 +173,9 @@
         </tbody>
       </table>
 
-      {% if case.notes %}
+      {% if case.note %}
       <h3 id="notes">Additional Notes</h3>
-      {% for n in case.notes %}
-      <p>{{n}}</p>
-      {% endfor %}
+      <p>{{case.note}}</p>
       {% endif %}
 
       {% if debug %}
