@@ -12,19 +12,41 @@
 
   <div class="tab-content">
     <div class="tab-pane active" id="date">
-      <ul>
-        {% for y in years %}
-        <li><a href="{{ url_for('browse_date', year=y) }}">{{y}}</a></li>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for y in years %}
+          <tr>
+            <td>
+              <a href="{{ url_for('browse_date', year=y) }}">{{y}}</a>
+            </td>
+          </tr>
         {% endfor %}
-      </ul>
+        </tbody>
+      </table>
     </div><!--/tab-pane-->
 
     <div class="tab-pane" id="violation">
-      <ul>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Violation</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+        <tbody>
         {% for v in violations %}
-        <li>{{v.code}} -- {{v.summary}}</li>
+        <tr>
+          <td>{{v.code}}</td>
+          <td>{{v.summary}}</td>
+        </tr>
         {% endfor %}
-      </ul>
+        </tbody>
+      </table>
     </div><!--/tab-pane-->
 
   </div><!--/tab-content-->
