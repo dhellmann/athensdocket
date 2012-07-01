@@ -65,5 +65,13 @@ def browse_year(year):
                            cases=cases,
                            )
 
+
+@app.route('/case/<path:caseid>')
+def case(caseid):
+    case = mongo.db.cases.find_one({'_id': caseid})
+    return render_template('case.html',
+                           case=case,
+                           )
+
 if __name__ == '__main__':
     app.run('0.0.0.0', debug=True)

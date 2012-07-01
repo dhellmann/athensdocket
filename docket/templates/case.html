@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Case {{case._id}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+<h2>Case {{case._id}}</h2>
+
+<div class="row-fluid">
+<div class="span8 offset2">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Case Number</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{case.number}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+{% endblock %}
