@@ -2,7 +2,7 @@ import calendar
 import datetime
 import functools
 
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, request
 from flask.ext.pymongo import PyMongo, ASCENDING
 
 app = Flask(__name__)
@@ -113,7 +113,7 @@ def browse_date(year, month=None, day=None):
                            )
 
 
-@app.route('/case/<path:caseid>')
+@app.route('/case/<path:caseid>', methods=['GET'])
 def case(caseid):
     case = mongo.db.cases.find_one({'_id': caseid})
     violation = mongo.db.violation_codes.find_one({'_id': case['violation']})
@@ -122,10 +122,15 @@ def case(caseid):
                                          },
                                         sort=[('_id', ASCENDING)],
                                         )
+    job = mongo.db.jobs.find_one({'_id': case['load_job_id']})
+    app.logger.debug('args: %r', request.args)
+    user_debug = bool(request.args.get('debug', False))
     return render_template('case.html',
                            case=case,
                            violation=violation,
                            cases_on_page=cases_on_page,
+                           debug=(app.debug or user_debug),
+                           job=job,
                            )
 
 

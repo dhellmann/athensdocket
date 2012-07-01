@@ -219,6 +219,7 @@ class Parser(object):
         self.case = None
         self.next_case = None
         self.errors = []
+        self._lines = []
         return
 
     @show_parse_action
@@ -454,6 +455,8 @@ class Parser(object):
                         )
         # Merge the notes
         case['note'] = '\n'.join(case.get('note', []))
+        # Record the raw version of the input that lead to this case
+        case['lines'] = self._lines[:]
         return
 
     def parse(self, lines, continueOnError=True):
@@ -470,11 +473,13 @@ class Parser(object):
             log.debug(line)
             if line:
                 try:
+                    self._lines.append((num, line))
                     self.case_record_parser.parseString(line)
                     if self.next_case:
                         self.prepare_case(self.next_case, num)
                         yield self.next_case
                         self.next_case = None
+                        self._lines = []
                 except (ParseException, ValueError) as err:
                     self.errors.append((num, line, unicode(err)))
                     log.error('Parse error processing %r: %s', line, err)

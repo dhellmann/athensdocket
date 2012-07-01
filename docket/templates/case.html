@@ -40,6 +40,30 @@
 
     <div class="span9">
 
+      <h3 id="participants">People Involved in the Case</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th width="20%">Name</th>
+            <th width="20%">Role</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in case.participants %}
+          <tr>
+            <td width="20%">{{p.full_name}}</td>
+            <td width="20%">
+              {{p.role}}
+              {{p.gender}}
+              {{p.race}}
+            </td>
+            <td>{{p.notes}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
       <h3 id="arrest">Arrest</h3>
       <table class="table">
         <tbody>
@@ -135,30 +159,6 @@
       <p>Unknown</p>
       {% endif %}
 
-      <h3 id="participants">People Involved in the Case</h3>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th width="20%">Name</th>
-            <th width="20%">Role</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for p in case.participants %}
-          <tr>
-            <td width="20%">{{p.full_name}}</td>
-            <td width="20%">
-              {{p.role}}
-              {{p.gender}}
-              {{p.race}}
-            </td>
-            <td>{{p.notes}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
       <h3 id="book">Docket Book</h3>
       <table class="table">
         <tbody>
@@ -179,7 +179,32 @@
       <p>{{n}}</p>
       {% endfor %}
       {% endif %}
+
+      {% if debug %}
+      <h3 id="debug">Debug</h3>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th width="15%">Job</th>
+            <td>{{case.load_job_id}}</td>
+          </tr>
+          <tr>
+            <th width="15%">Date</th>
+            <td>{{job.start}}</td>
+          </tr>
+          <tr>
+            <th>Filename</th>
+            <td>{{job.filename}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h4>Raw Input</h4>
+      <pre>
+{%- for l in case.lines %}{{ '%5d | %s'|format(l[0], l[1]) }}
+{% endfor %}</pre>
       
+      {% endif %}
+
     </div>
   </div>
 

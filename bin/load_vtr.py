@@ -60,26 +60,26 @@ def main():
         log.info('Resetting the database...')
         database.drop_collection('books')
 
-    job_id = unicode(uuid.uuid4())
-    job_start = datetime.datetime.utcnow()
-
-    log.info('Starting job %s', job_id)
-
     # Get full paths to the input filenames
     filenames = [os.path.abspath(f)
                  for f in args.filenames
                  ]
 
-    # Record the beginning of the database
-    database.jobs.insert({'_id': job_id,
-                          'start': job_start,
-                          'filenames': filenames,
-                          })
-
     # Start the tasks to parse the input files
     task_results = []
     db_factory = db.DBFactory(args.database)
     for name in filenames:
+
+        job_id = unicode(uuid.uuid4())
+        job_start = datetime.datetime.utcnow()
+
+        log.info('Starting job %s', job_id)
+
+        # Record the beginning of the database
+        database.jobs.insert({'_id': job_id,
+                              'start': job_start,
+                              'filename': name,
+                              })
 
         error_handler = db.ErrorHandler(db_factory, job_id, name)
 
