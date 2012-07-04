@@ -48,9 +48,9 @@
       <tr>
         <td style="text-align: right;"><a href="{{ url_for('case', caseid=case._id) }}">{{case.number}}</a></td>
         <td><a href="{{ url_for('browse_date',
-                     year=case.hearing_date.year, 
-                     month=case.hearing_date.month, 
-                     day=case.hearing_date.day)}}">{{case.hearing_date|date}}</a></td>
+                     year=case.date.year, 
+                     month=case.date.month, 
+                     day=case.date.day)}}">{{case.date|date}}</a></td>
         <td>{{case.defendant}}</td>
         <td><a href="{{ url_for('code', code=case.violation) }}">{{case.violation}}</a></td>
       </tr>

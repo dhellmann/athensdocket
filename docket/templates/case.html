@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Case {{case.number}} from {{case.hearing_date.year}}
+{% block title %}Case {{case.number}} from {{case.date.year}}
 | {{ super() }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
 
   <div class="page-header">
-    <h1>Case <small>{{case.number}} from {{case.hearing_date.year}} :
+    <h1>Case <small>{{case.number}} from {{case.date.year}} :
     {{case.defendant}} for {{violation.code}} ({{violation.summary}})</small></h1>
   </div>
 
@@ -16,15 +16,15 @@
         <ul class="nav nav-list">
           <li class="nav-header">Browse</li>
           <li><a href="{{ url_for('browse_date',
-                       year=case.hearing_date.year,
-                       month=case.hearing_date.month,
-                       day=case.hearing_date.day) }}">Cases
-                       heard that day</a>
+                       year=case.date.year,
+                       month=case.date.month,
+                       day=case.date.day) }}">
+                       Arrests that day</a>
           </li>
           <li><a href="{{ url_for('browse_date',
-                       year=case.hearing_date.year,
-                       month=case.hearing_date.month) }}">
-                       Cases heard in {{case.hearing_date|month}} of {{case.hearing_date.year}}</a></li>
+                       year=case.date.year,
+                       month=case.date.month) }}">
+                       Arrests in {{case.date|month}} of {{case.date.year}}</a></li>
           {% if cases_on_page %}
           <li class="nav-header">Cases on page
           {{case.page}}</li>
