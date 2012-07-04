@@ -9,6 +9,7 @@ from docket import vtr, encodings
 def parse_file(filename, db_factory, load_job_id, error_handler):
     """Parse the named VTR file and load the data into the database.
     """
+    db = db_factory()
     log = parse_file.get_logger()
     log.info('loading from %s', filename)
     try:
@@ -18,8 +19,61 @@ def parse_file(filename, db_factory, load_job_id, error_handler):
             for case in parser.parse(f):
                 log.info('New case: %s/%s', case['book'], case['number'])
                 num_cases += 1
-                add_encodings_for_names(case, error_handler)
-                store_case_in_database(case, load_job_id, db_factory, error_handler)
+
+                # Store the book
+                try:
+                    db.books.update({'_id': case['book']},
+                                    {'$set': {'year': int(case['book'].split('/')[0]),
+                                              'number': case['book'].split('/')[1],
+                                              },
+                                     '$addToSet': {'load_jobs': load_job_id,
+                                                   },
+                                     },
+                                    upsert=True,
+                                    )
+                except Exception as err:
+                    log.error('Could not store book %s: %s', case['book'], err)
+                    error_handler(unicode(err))
+
+                # Store the case
+                case['_id'] = '%s/%s' % (case['book'], case['number'])
+                # associate the case record with the job for auditing
+                case['load_job_id'] = load_job_id
+                # pick a "date" for the case
+                case['date'] = case.get('hearing_date', case.get('arrest_date'))
+                try:
+                    db.cases.update({'_id': case['_id']},
+                                    case,
+                                    upsert=True,
+                                    )
+                except Exception as err:
+                    log.error('Could not store case %s: %s', case['_id'], err)
+                    error_handler(unicode(err))
+
+                # Add participant info
+
+                # index for upsert
+                for p in get_encoded_participants(case, error_handler):
+                    #log.info('new participant: %r', p)
+                    p['case_id'] = case['_id']
+                    p['case_number'] = case['number']
+                    p['date'] = case['date']
+                    try:
+                        db.participants.update(
+                            {'case': case['_id'],
+                             'encoding': p['encoding'],
+                             'full_name': p['full_name'],
+                             'role': p['role'],
+                             },
+                            p,
+                            upsert=True,
+                            )
+                    except Exception as err:
+                        log.error('Could not store participant %s for case %s: %s',
+                                  p['_id'], case['_id'], err)
+                        error_handler(unicode(err))
+
+            # Handle errors that did not result in new case records.
             errors = ['Parse error at %s:%s "%s" (%s)' % \
                           (filename, num, line, err)
                       for num, line, err in parser.errors
@@ -38,55 +92,25 @@ def parse_file(filename, db_factory, load_job_id, error_handler):
 FIELDS_TO_ENCODE = ['first_name', 'middle_name', 'last_name']
 
 
-def add_encodings_for_names(case, error_handler):
-    """Add phonetic encodings for names of participants associated with a case.
+def get_encoded_participants(case, error_handler):
+    """Return participant documents with encoded names.
     """
     log = parse_file.get_logger()
-    log.info('encoding names for %s/%s', case['book'], case['number'])
     for participant in case['participants']:
-        for field in FIELDS_TO_ENCODE:
-            for encoder_name, encoder in encodings.ENCODERS.items():
+        for encoder_name, encoder in encodings.ENCODERS.items():
+            result = {'encoding': encoder_name,
+                      'case': case['_id'],
+                      }
+            result.update(participant)
+            for field in FIELDS_TO_ENCODE:
                 try:
                     orig = participant[field]
                     encoded = encoder(orig) if orig else ['']
-                    participant['%s_%s' % (field, encoder_name)] = encoded
+                    result[field] = encoded
                 except Exception as err:
                     msg = 'Error encoding %s to %s for %s/%s "%s" (%s)' % \
                         (field, encoder_name, case['book'], case['number'],
                          participant[field], err)
                     log.error(msg)
                     error_handler(msg)
-    return
-
-
-def store_case_in_database(case, load_job_id, db_factory, error_handler):
-    """Store the case in the database, updating an existing entry if found.
-    """
-    log = parse_file.get_logger()
-    case['_id'] = '%s/%s' % (case['book'], case['number'])
-    # associate the case record with the job for auditing
-    case['load_job_id'] = load_job_id
-    log.info('storing %s', case['_id'])
-    db = db_factory()
-    try:
-        db.cases.update({'_id': case['_id']},
-                        case,
-                        upsert=True,
-                        )
-    except Exception as err:
-        log.error('Could not store case %s: %s', case['_id'], err)
-        error_handler(unicode(err))
-    try:
-        db.books.update({'book_id': case['book']},
-                        {'$set': {'book_id': case['book'],
-                                  'year': int(case['book'].split('/')[0]),
-                                  'number': case['book'].split('/')[1],
-                                  },
-                         '$addToSet': {'load_jobs': load_job_id,
-                                       },
-                         },
-                        upsert=True,
-                        )
-    except Exception as err:
-        log.error('Could not store book %s: %s', case['book'], err)
-        error_handler(unicode(err))
+            yield result

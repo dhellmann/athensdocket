@@ -1,14 +1,24 @@
 import calendar
 import datetime
 import functools
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from flask import Flask, render_template, g, request
 from flask.ext.pymongo import PyMongo, ASCENDING
+from flask.ext.wtf import Form, StringField, SelectField, validators
+
+from docket.encodings import ENCODERS
 
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'docket'
 mongo = PyMongo(app)
+
+# Turn off cross-site checking since we aren't saving user data
+app.csrf_enabled = False
 
 
 @app.template_filter('date')
@@ -59,10 +69,59 @@ def about():
     return render_template('about.html')
 
 
+def name_length_check(form, field):
+    app.logger.debug('checking length of %s', field)
+    if field.data and len(field.data) < 3:
+        raise validators.ValidationError('Must be at least 3 characters long')
+
+
+class SearchForm(Form):
+    first_name = StringField('First Name', [name_length_check])
+    last_name = StringField('Last Name', [name_length_check])
+    encoding = SelectField('Search Type',
+                           default='normalize',
+                           choices=[('exact', 'Exact match'),
+                                    ('normalized', 'Ignore case'),
+                                    ('soundex', 'Soundex'),
+                                    ('metaphone', 'Metaphone'),
+                                    ('nysiis', 'NYSIIS'),
+                                    ],
+                           )
+
+
+def make_encoded_expression(field, encoded):
+    encoded = filter(bool, encoded)
+    if len(encoded) == 1:
+        return {field: encoded[0]}
+    return {'$or': [{field: e} for e in encoded]}
+
+
 @app.route('/search')
 @set_navbar_active
 def search():
-    return render_template('search.html')
+    results = []
+    form = SearchForm(request.args, csrf_enabled=False)
+    if form.validate():
+        encoder = ENCODERS[form.encoding.data]
+        q = {}
+        if form.first_name.data:
+            q.update(make_encoded_expression('first_name',
+                                             encoder(form.first_name.data),
+                                             )
+                     )
+        if form.last_name.data:
+            q.update(make_encoded_expression('last_name',
+                                             encoder(form.last_name.data),
+                                             )
+                     )
+        if q:
+            q['encoding'] = form.encoding.data
+            app.logger.debug('query = %s', q)
+            results = mongo.db.participants.find(q, sort=[('date', ASCENDING)])
+    return render_template('search.html',
+                           form=form,
+                           results=results,
+                           )
 
 
 @app.route('/browse')
@@ -98,11 +157,11 @@ def browse_date(year, month=None, day=None):
     else:
         raise ValueError('Invalid date')
     app.logger.debug('first_day=%s, last_day=%s', first_day, last_day)
-    cases = mongo.db.cases.find({'hearing_date': {'$gte': first_day,
-                                                 '$lt': last_day,
-                                                 },
+    cases = mongo.db.cases.find({'date': {'$gte': first_day,
+                                          '$lt': last_day,
+                                          },
                                  },
-                                sort=[('hearing_date', ASCENDING)],
+                                sort=[('date', ASCENDING)],
                                 )
     return render_template('browse_date.html',
                            date_range=date_range,

@@ -14,30 +14,34 @@
     <form class="well form-vertical">
       <fieldset>
 
-        <div class="control-group">
-          <label class="control-label" for="first_name">First Name</label>
+        <div class="control-group {% if form.first_name.errors %}error{% endif %}">
+          <label class="control-label" for="first_name">{{form.first_name.label}}</label>
           <div class="controls">
-            <input type="text" placeholder="First" name="first_name" id="first_name">
+            {{ form.first_name(placeholder="First name") }}
           </div>
+          {% if form.first_name.errors %}
+          <div class="alert alert-error">
+            {% for error in form.first_name.errors %}<p>{{error}}</p>{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="control-group {% if form.last_name.errors %}error{% endif %}">
+          <label class="control-label" for="last_name">{{form.last_name.label}}</label>
+          <div class="controls">
+            {{ form.last_name(placeholder="Last name") }}
+          </div>
+          {% if form.last_name.errors %}
+          <div class="alert alert-error">
+            {% for error in form.last_name.errors %}<p>{{error}}</p>{% endfor %}
+          </div>
+          {% endif %}
         </div>
 
         <div class="control-group">
-          <label class="control-label" for="last_name">Last Name</label>
+          <label class="control-label" for="encoding">{{form.encoding.label}}</label>
           <div class="controls">
-            <input type="text" placeholder="Last" name="last_name" id="last_name">
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="algorithm">Search Type</label>
-          <div class="controls">
-            <select name="algorithm" id="algorithm">
-              <option>Exact match</option>
-              <option>Ignore case</option>
-              <option>Soundex</option>
-              <option>Metaphone</option>
-              <option>NYSIIS</option>
-            </select>
+            {{ form.encoding }}
           </div>
         </div>
 
@@ -52,15 +56,30 @@
   </div>
 
   <div class="span9">
-    <div class="alert alert-info">
-      <h4 class="alert-heading">Under Development</h4> This site is still under
-      development, and the search feature is not yet
-      implemented. Please use the <a href="{{ url_for('browse')
-      }}">browse</a> interface in the mean time.
-    </div>
-    <a class="btn btn-primary btn-large" href="{{ url_for('browse') }}">Browse</a></p>
-    <table>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th style="text-align: right;" width="10%">Case Number</th>
+          <th width="20%">Arrest Date</th>
+          <th>Participant</th>
+          <th width="20%">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for result in results %}
+        <tr>
+          <td style="text-align: right;"><a href="{{ url_for('case', caseid=result.case_id) }}">{{result.case_number}}</a></td>
+          <td><a href="{{ url_for('browse_date',
+                       year=result.date.year, 
+                       month=result.date.month, 
+                       day=result.date.day)}}">{{result.date|date}}</a></td>
+          <td>{{result.full_name}}</td>
+          <td>{{result.role}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
+
   </div><!--/span-->
   
   </div><!--/row-->
