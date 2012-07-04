@@ -9,7 +9,7 @@ import os
 import sys
 import uuid
 
-from pymongo import Connection
+from pymongo import Connection, ASCENDING
 
 sys.path.append(os.path.dirname(os.path.dirname(sys.argv[0])))
 from docket import db
@@ -59,6 +59,27 @@ def main():
     if args.reset_db:
         log.info('Resetting the database...')
         database.drop_collection('books')
+
+    ## Participants collection
+    log.info('indexing participants')
+
+    # for upsert
+    database.participants.create_index([
+            ('case', ASCENDING),
+            ('encoding', ASCENDING),
+            ('full_name', ASCENDING),
+            ('role', ASCENDING),
+            ])
+
+    ## Case collection
+    log.info('indexing cases')
+
+    # for browse
+    database.cases.create_index('date')
+    database.cases.create_index([
+            ('book', ASCENDING),
+            ('page', ASCENDING),
+            ])
 
     # Get full paths to the input filenames
     filenames = [os.path.abspath(f)
