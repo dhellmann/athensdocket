@@ -55,7 +55,7 @@
         <tbody>
           {% for p in case.participants %}
           <tr>
-            <td width="20%">{{p.full_name}}</td>
+            <td width="20%"><a href="{{p|participant_search_url}}">{{p.full_name}}</a></td>
             <td width="20%">
               {{p.role}}
               {{p.gender}}

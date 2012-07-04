@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, url_for
 from flask.ext.pymongo import PyMongo, ASCENDING
 from flask.ext.wtf import Form, StringField, SelectField, validators
 
@@ -46,6 +46,17 @@ def sentence_amount(s):
     else:
         fmt = '%(amount)d %(units)s'
     return fmt % s
+
+
+@app.template_filter('participant_search_url')
+def participant_search_url(p):
+    fn = p['first_name']
+    ln = p['last_name']
+    return url_for('search',
+                   first_name=fn if len(fn) > 3 else '',
+                   last_name=ln if len(ln) > 3 else '',
+                   encoding='normalized',
+                   )
 
 
 def set_navbar_active(f):
