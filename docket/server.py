@@ -137,6 +137,7 @@ def make_query_for_encoding(form, encoding):
 def search():
     results = []
     alternate_counts = []
+    count = 0
     form = SearchForm(request.args, csrf_enabled=False)
     if form.validate():
         q = make_query_for_encoding(form, form.encoding.data)
@@ -144,6 +145,7 @@ def search():
             app.logger.debug('query = %s', q)
             participants = mongo.db.participants
             results = participants.find(q, sort=[('date', ASCENDING)])
+            count = results.count()
             alternate_counts = [
                 {'encoding': display_name,
                  'count': participants.find(make_query_for_encoding(form, encoding_name)).count(),
@@ -159,6 +161,7 @@ def search():
     return render_template('search.html',
                            form=form,
                            results=results,
+                           count=count,
                            alternate_counts=alternate_counts,
                            )
 
