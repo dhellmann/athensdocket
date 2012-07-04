@@ -17,6 +17,9 @@ app = Flask(__name__)
 app.config['MONGO_DBNAME'] = 'docket'
 mongo = PyMongo(app)
 
+# How short do we allow names for searching?
+MIN_NAME_LENGTH = 3
+
 # Turn off cross-site checking since we aren't saving user data
 app.csrf_enabled = False
 
@@ -53,8 +56,8 @@ def participant_search_url(p):
     fn = p['first_name']
     ln = p['last_name']
     return url_for('search',
-                   first_name=fn if len(fn) > 3 else '',
-                   last_name=ln if len(ln) > 3 else '',
+                   first_name=fn if len(fn) >= MIN_NAME_LENGTH else '',
+                   last_name=ln if len(ln) >= MIN_NAME_LENGTH else '',
                    encoding='normalized',
                    )
 
@@ -82,8 +85,10 @@ def about():
 
 def name_length_check(form, field):
     app.logger.debug('checking length of %s', field)
-    if field.data and len(field.data) < 3:
-        raise validators.ValidationError('Must be at least 3 characters long')
+    if field.data and len(field.data) < MIN_NAME_LENGTH:
+        raise validators.ValidationError(
+            'Must be at least %s characters long' % MIN_NAME_LENGTH
+            )
 
 
 class SearchForm(Form):
