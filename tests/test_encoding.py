@@ -1,31 +1,34 @@
-from mock import Mock
+# -*- encoding: utf-8 -*-
 
 from docket import encodings
 from docket import tasks
 
 
-def check_one(field_name, encoding_name, case):
-    expected_field = '%s_%s' % (field_name, encoding_name)
-    assert expected_field in case['participants'][0]
-    assert case['participants'][0][expected_field]
+def check_one_participant(participant, case):
+    assert 'encoding' in participant
+    assert participant['case'] == case['_id']
 
 
 def test():
     errors = []
-    c = {'participants': [{'first_name':'Dougas',
-                           'middle_name':'Richard',
-                           'last_name':'Hellmann',
+    c = {'participants': [{'first_name': u'Douglas',
+                           'middle_name': u'Richard',
+                           'last_name': u'Hellmann',
                            },
                           ],
          'book': 'test',
          'number': '0',
+         '_id': 'case-id-goes-here',
          }
-    tasks.add_encodings_for_names(c,
-                                  error_handler=errors.append,
-                                  )
-    for field in tasks.FIELDS_TO_ENCODE:
-        for encoder_name, encoder in encodings.ENCODERS.items():
-            yield check_one, field, encoder_name, c
+    encoded_participants = list(
+        tasks.get_encoded_participants(c,
+                                       error_handler=errors.append,
+                                       )
+        )
+    actual_encodings = set(p['encoding'] for p in encoded_participants)
+    assert actual_encodings == set(encodings.ENCODERS.keys())
+    for p in encoded_participants:
+        yield check_one_participant, p, c
 
 
 def test_fields():
@@ -37,8 +40,8 @@ def test_encoders():
 
 
 def test_normalize_case():
-    assert encodings.normalize('ABC') == ['abc']
+    assert encodings.normalize(u'ABC') == ['abc']
 
 
 def test_normalize_punctuation():
-    assert encodings.normalize('A.B.C.') == ['abc']
+    assert encodings.normalize(u'A.B.C.') == ['abc']

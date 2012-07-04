@@ -1,4 +1,4 @@
-import string
+# -*- encoding: utf-8 -*-
 
 import fuzzy
 
@@ -17,15 +17,23 @@ def nysiis(s, e=fuzzy.nysiis):
     return [e(s)]
 
 
-def normalize(s,
-              trans=string.maketrans(string.lowercase, string.lowercase),
-              delete=string.punctuation,
-              ):
+CHARS_TO_DELETE = dict((ord(c), None)
+                       for c in u'!"#%\'()*+,-./:;<=>?@[\]^_`{|}~'
+                       )
+
+
+def normalize(s):
     # Return a list to be like metaphone
-    return [s.lower().translate(trans, delete)]
+    return [s.lower().translate(CHARS_TO_DELETE)]
+
+
+def exact(s):
+    # Return a list to be like metaphone
+    return [s]
 
 
 ENCODERS = {
+    'exact': exact,
     'soundex': soundex,
     'metaphone': metaphone,
     'nysiis': nysiis,

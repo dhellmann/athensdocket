@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 
 from docket import vtr
 import pyparsing
@@ -9,7 +10,7 @@ import datetime
 
 def test_book():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1900/1
 c 1
 """.splitlines()))
@@ -19,7 +20,7 @@ c 1
 
 def test_multiple_cases():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1900/1
 c 1
 c 2
@@ -29,7 +30,7 @@ c 2
 
 def test_dates():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -43,7 +44,7 @@ hd 01 Apr 1903
 
 def test_defendant_simple():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -61,7 +62,7 @@ d Charley Thomas
 
 def test_defendant_middle_initial():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -79,7 +80,7 @@ d Charley M. Thomas
 
 def test_defendant_two_middle_names():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -97,7 +98,7 @@ d Charley MidA MidB Thomas
 
 def test_defendant_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 75
 c 824
@@ -116,7 +117,7 @@ d William Griffith (alias William Bolton)
 
 def test_witness_title():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 147
 c 103
@@ -135,7 +136,7 @@ w C. A. Lambert title=Mrs.
 
 def test_witness_alias():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 147
 c 103
@@ -154,7 +155,7 @@ w C. A. Lambert alias=AliasGoesHere
 
 def test_witness_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 147
 c 103
@@ -174,7 +175,7 @@ w C. A. Lambert (note goes here)
 
 def test_defense_witness_title():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 147
 c 103
@@ -193,7 +194,7 @@ dw C. A. Lambert title=Mrs.
 
 def test_defendant_suffix():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 119
 c 21
@@ -212,7 +213,7 @@ d Jerry Brown suffix=Jr.
 
 def test_defendant_vehicle():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 119
 c 21
@@ -225,7 +226,7 @@ dv abc 123
 
 def test_violation():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 119
 c 21
@@ -237,7 +238,7 @@ v 123
 
 def test_violation_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 119
 c 21
@@ -250,7 +251,7 @@ v 123 (some additional info)
 
 def test_location():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 174
@@ -262,7 +263,7 @@ l College & River Streets
 
 def test_arresting_officer():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -280,7 +281,7 @@ ao Hamilton
 
 def test_plea_g():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -292,7 +293,7 @@ p g
 
 def test_plea_ng():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -304,7 +305,7 @@ p ng
 
 def test_plea_nc():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -316,7 +317,7 @@ p nc
 
 def test_plea_guilty():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -328,7 +329,7 @@ p guilty
 
 def test_plea_guitly():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -340,7 +341,7 @@ p guitly
 
 def test_plea_not_guilty():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -352,7 +353,7 @@ p not guilty
 
 def test_case_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -374,7 +375,7 @@ n this is a test case
 
 def test_sentence_rendered_fine():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -393,7 +394,7 @@ sr 5 F
 
 def test_sentence_rendered_cost():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -412,7 +413,7 @@ sr 5 C
 
 def test_sentence_rendered_jail():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -431,7 +432,7 @@ sr 5 J
 
 def test_sentence_rendered_jail2():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1907/15
 pg 33
 c 1160
@@ -460,7 +461,7 @@ sr J ("that the Def be confined in the City Prison until Dec. 31st 1907 until 7 
 
 def test_sentence_rendered_labor():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -479,7 +480,7 @@ sr 5 L
 
 def test_sentence_rendered_labor_w():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -498,7 +499,7 @@ sr 5 W
 
 def test_sentence_rendered_labor_months():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -517,7 +518,7 @@ sr 5 M
 
 def test_sentence_rendered_remitted():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -536,7 +537,7 @@ sr 5 R
 
 def test_sentence_rendered_remitted_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -556,7 +557,7 @@ sr 5 R (note goes here)
 
 def test_sentence_rendered_dismissed():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -577,7 +578,7 @@ def test_sentence_rendered_other_without_note():
     p = vtr.Parser()
     assert_raises(ValueError,
                   list,
-                  p.parse("""
+                  p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -587,7 +588,7 @@ sr o
 
 def test_sentence_rendered_other():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -607,7 +608,7 @@ sr o (explain what this means)
 
 def test_sentence_served_fine():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -626,7 +627,7 @@ ss 5 F
 
 def test_sentence_served_fine_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -646,7 +647,7 @@ ss 5 F (note goes here)
 
 def test_sentence_served_fine_date():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -666,7 +667,7 @@ ss 5 F 1 Jan 2012
 
 def test_sentence_served_fine_date_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -687,7 +688,7 @@ ss 5 F 1 Jan 2012 (note goes here)
 
 def test_sentence_served_cost():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -706,7 +707,7 @@ ss 5 C
 
 def test_sentence_served_jail():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -725,7 +726,7 @@ ss 5 J
 
 def test_sentence_served_labor():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -744,7 +745,7 @@ ss 5 L
 
 def test_sentence_served_labor_w():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -763,7 +764,7 @@ ss 5 W
 
 def test_sentence_served_labor_months():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -782,7 +783,7 @@ ss 5 M
 
 def test_sentence_served_remitted():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -801,7 +802,7 @@ ss 5 R
 
 def test_sentence_served_remitted_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -821,7 +822,7 @@ ss 5 R (note goes here)
 
 def test_sentence_served_other():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -841,7 +842,7 @@ ss o (explain what this means)
 
 def test_sentence_contempt():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -860,7 +861,7 @@ sc 5
 
 def test_sentence_contempt_type_fine():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -879,7 +880,7 @@ sc 5 F
 
 def test_sentence_contempt_type_labor():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -898,7 +899,7 @@ sc 5 W
 
 def test_outcome_guilty():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -910,7 +911,7 @@ o g
 
 def test_outcome_guilty_verbose():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -922,7 +923,7 @@ o guilty
 
 def test_outcome_not_guilty():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -934,7 +935,7 @@ o ng
 
 def test_outcome_not_guilty_verbose():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -946,7 +947,7 @@ o not guilty
 
 def test_outcome_dismissed():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -958,7 +959,7 @@ o d
 
 def test_outcome_dismissed_verbose():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -970,7 +971,7 @@ o dismissed
 
 def test_outcome_suspended():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -982,7 +983,7 @@ o s
 
 def test_outcome_suspended_verbose():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -994,7 +995,7 @@ o suspended
 
 def test_gender_male():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -1006,7 +1007,7 @@ g m
 
 def test_gender_female():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -1018,7 +1019,7 @@ g f
 
 def test_race_white():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -1030,7 +1031,7 @@ r w
 
 def test_race_white_upper():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -1042,7 +1043,7 @@ r W
 
 def test_race_colored():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -1054,7 +1055,7 @@ r c
 
 def test_race_colored_upper():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -1066,7 +1067,7 @@ r C
 
 def test_multiple_cases_complete():
     p = vtr.Parser()
-    cases = p.parse("""
+    cases = p.parse(u"""
 b 1902/6
 
 pg 170
@@ -1154,7 +1155,7 @@ o dismissed
 
 def test_multiple_cases_in_multiple_books():
     p = vtr.Parser()
-    cases = p.parse("""
+    cases = p.parse(u"""
 b 1900/1
 c 1
 b 1900/2
@@ -1165,7 +1166,7 @@ c 2
 
 def test_other_person_simple():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1902/6
 pg 170
 c 172
@@ -1183,7 +1184,7 @@ op Charley Thomas
 
 def test_note():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1900/1
 pg 170
 c 172
@@ -1195,7 +1196,7 @@ n note 1
 
 def test_note_multiple_lines():
     p = vtr.Parser()
-    cases = list(p.parse("""
+    cases = list(p.parse(u"""
 b 1900/1
 pg 170
 c 172

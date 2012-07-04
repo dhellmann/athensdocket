@@ -1,3 +1,4 @@
+import codecs
 
 from celery.task import task
 
@@ -12,7 +13,7 @@ def parse_file(filename, db_factory, load_job_id, error_handler):
     log.info('loading from %s', filename)
     try:
         num_cases = 0
-        with open(filename, 'r') as f:
+        with codecs.open(filename, 'r', encoding='utf-8') as f:
             parser = vtr.Parser()
             for case in parser.parse(f):
                 log.info('New case: %s/%s', case['book'], case['number'])
