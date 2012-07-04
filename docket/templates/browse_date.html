@@ -32,12 +32,29 @@
   {%- if day %}
   <li>{{'%02d'|format(day)}}</li>
   {% endif %}
+
+  <span class="pull-right">
+  <li><span class="divider">|</span> <a href="{{ url_for('browse_date', year=year,
+  month=1)}}">Jan</a> <span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=2) }}">Feb</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=3) }}">Mar</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=4) }}">Apr</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=5) }}">May</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=6) }}">Jun</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=7) }}">Jul</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=8) }}">Aug</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=9) }}">Sep</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=10) }}">Oct</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=11) }}">Nov</a><span class="divider">-</span></li>
+  <li><a href="{{ url_for('browse_date', year=year, month=12)
+  }}">Dec</a></li>
+  </span>
 </ul>
 
   <table class="table table-striped">
     <thead>
       <tr>
-        <th style="text-align: right;" width="10%">Case Number</th>
+        <th style="text-align: right;" width="10%">Case</th>
         <th width="20%">Hearing Date</th>
         <th>Defendant</th>
         <th width="10%">Violation</th>

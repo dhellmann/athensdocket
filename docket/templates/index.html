@@ -15,7 +15,11 @@
             Athens-Clarke County, Georgia, USA.
             <a class="btn btn-medium" href="{{ url_for('about') }}">Learn more &raquo;</a></p>
             <p>
-            <a class="btn btn-primary btn-large" href="{{ url_for('search') }}">Search </a></p>
+            <a class="btn btn-primary btn-large" href="{{
+            url_for('search') }}"><i class="icon-search
+            icon-white"></i> Search</a>
+            <a class="btn btn-primary btn-large" href="{{
+            url_for('browse') }}"><i class="icon-book icon-white"></i> Browse</a></p>
           </div>
           <div>
             <center><img src="{{ url_for('static',

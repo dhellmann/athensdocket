@@ -38,10 +38,23 @@
 
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="{% if g.navbar_active == 'index' %}active{% endif %}"><a href="{{ url_for('index') }}"">Home</a></li>
-              <li class="{% if g.navbar_active == 'about' %}active{% endif %}"><a href="{{url_for('about')}}">About</a></li>
-              <li class="{% if g.navbar_active == 'browse' %}active{% endif %}"><a href="{{url_for('browse')}}">Browse</a></li>
-              <li class="{% if g.navbar_active == 'search' %}active{% endif %}"><a href="{{url_for('search')}}">Search</a></li>
+              <li class="{% if g.navbar_active == 'index' %}active{%
+              endif %}"><a href="{{ url_for('index')
+              }}""><i class="icon-home icon-white"></i> Home</a></li>
+              <li class="{% if g.navbar_active == 'browse' %}active{%
+              endif
+              %}"><a href="{{url_for('browse')}}"><i class="icon-book
+              icon-white"></i> Browse</a></li>
+              <li class="{% if g.navbar_active == 'search' %}active{%
+              endif
+              %}"><a href="{{url_for('search')}}"><i class="icon-search
+              icon-white"></i> Search</a></li>
+            </ul>
+            <ul class="nav pull-right">
+              <li class="{% if g.navbar_active == 'about' %}active{%
+              endif
+              %}"><a href="{{url_for('about')}}"><i class="icon-info-sign
+              icon-white"></i> About</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -63,9 +76,11 @@
 
       <hr>
 
-      <footer>
-        <p>&copy; 2012 Athens-Clarke County Heritage Room</p>
-      </footer>
+      <div class="span12">
+        <footer>
+          <p>&copy; 2012 Athens-Clarke County Heritage Room</p>
+        </footer>
+      </div>
 
     </div><!--/.fluid-container-->
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Browse{% endblock %}
+{% block title %}Browse | {{ super() }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -14,23 +14,33 @@
   
   <div class="tabbable">
     <ul class="nav nav-tabs">
-      <li class="active"><a href="#date" data-toggle="tab">Cases by Date</a></li>
-      <li><a href="#code" data-toggle="tab">Codes</a></li>
+      <li class="active"><a href="#date"
+      data-toggle="tab"><i class="icon-calendar"></i> Cases by Date</a></li>
+      <li><a href="#code"
+      data-toggle="tab"><i class="icon-th-list"></i> Codes</a></li>
     </ul>
     
     <div class="tab-content">
       <div class="tab-pane active" id="date">
         <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Year</th>
-            </tr>
-          </thead>
           <tbody>
             {% for y in years %}
             <tr>
               <td>
-                <a href="{{ url_for('browse_date', year=y) }}">{{y}}</a>
+                <a href="{{ url_for('browse_date', year=y)}}">{{y}}</a> -
+                <a href="{{ url_for('browse_date', year=y,
+                month=1)}}">Jan</a> -
+                <a href="{{ url_for('browse_date', year=y, month=2) }}">Feb</a> -
+                <a href="{{ url_for('browse_date', year=y, month=3) }}">Mar</a> -
+                <a href="{{ url_for('browse_date', year=y, month=4) }}">Apr</a> -
+                <a href="{{ url_for('browse_date', year=y, month=5) }}">May</a> -
+                <a href="{{ url_for('browse_date', year=y, month=6) }}">Jun</a> -
+                <a href="{{ url_for('browse_date', year=y, month=7) }}">Jul</a> -
+                <a href="{{ url_for('browse_date', year=y, month=8) }}">Aug</a> -
+                <a href="{{ url_for('browse_date', year=y, month=9) }}">Sep</a> -
+                <a href="{{ url_for('browse_date', year=y, month=10) }}">Oct</a> -
+                <a href="{{ url_for('browse_date', year=y, month=11) }}">Nov</a> -
+                <a href="{{ url_for('browse_date', year=y, month=12) }}">Dec</a>
               </td>
             </tr>
             {% endfor %}

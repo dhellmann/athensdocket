@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Search{% endblock %}
+{% block title %}Search | {{ super() }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -75,8 +75,8 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th style="text-align: right;" width="10%">Case Number</th>
-          <th width="20%">Arrest Date</th>
+          <th style="text-align: right;" width="10%">Case</th>
+          <th width="20%">Date</th>
           <th>Participant</th>
           <th width="20%">Role</th>
         </tr>
