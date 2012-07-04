@@ -69,10 +69,15 @@
         {% for result in results %}
         <tr>
           <td style="text-align: right;"><a href="{{ url_for('case', caseid=result.case_id) }}">{{result.case_number}}</a></td>
-          <td><a href="{{ url_for('browse_date',
+          <td>
+          {% if result.date %}
+          <a href="{{ url_for('browse_date',
                        year=result.date.year, 
                        month=result.date.month, 
-                       day=result.date.day)}}">{{result.date|date}}</a></td>
+                       day=result.date.day)}}">{{result.date|date}}</a>
+          {% else %}no date
+          {% endif %}
+          </td>
           <td>{{result.full_name}}</td>
           <td>{{result.role}}</td>
         </tr>
