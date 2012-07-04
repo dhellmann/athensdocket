@@ -4,7 +4,7 @@ import fuzzy
 
 
 def metaphone(s, e=fuzzy.DMetaphone()):
-    return e(s)
+    return filter(bool, e(s))
 
 
 def soundex(s, e=fuzzy.Soundex(4)):
