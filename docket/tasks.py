@@ -40,7 +40,7 @@ def parse_file(filename, db_factory, load_job_id, error_handler):
                 # associate the case record with the job for auditing
                 case['load_job_id'] = load_job_id
                 # pick a "date" for the case
-                case['date'] = case.get('hearing_date', case.get('arrest_date'))
+                case['date'] = case.get('hearing_date') or case.get('arrest_date')
                 try:
                     db.cases.update({'_id': case['_id']},
                                     case,
