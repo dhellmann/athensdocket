@@ -53,6 +53,18 @@
         </div>
       </fieldset>
     </form>
+
+    {% if alternate_counts %}
+    <div class="well">
+      <ul class="nav nav-list">
+        <li class="nav-header">Other Search Types</li>
+        {% for ac in alternate_counts %}
+        <li><a href="{{ac.url|safe}}">{{ac.encoding}} : {{ac.count}}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
   </div>
 
   <div class="span9">

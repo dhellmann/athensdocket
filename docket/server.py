@@ -52,13 +52,13 @@ def sentence_amount(s):
 
 
 @app.template_filter('participant_search_url')
-def participant_search_url(p):
+def participant_search_url(p, encoding='normalized'):
     fn = p['first_name']
     ln = p['last_name']
     return url_for('search',
                    first_name=fn if len(fn) >= MIN_NAME_LENGTH else '',
                    last_name=ln if len(ln) >= MIN_NAME_LENGTH else '',
-                   encoding='normalized',
+                   encoding=encoding,
                    )
 
 
@@ -90,18 +90,20 @@ def name_length_check(form, field):
             'Must be at least %s characters long' % MIN_NAME_LENGTH
             )
 
+ENCODING_CHOICES = [('exact', 'Exact match'),
+                    ('normalized', 'Ignore case'),
+                    ('soundex', 'Soundex'),
+                    ('metaphone', 'Metaphone'),
+                    ('nysiis', 'NYSIIS'),
+                    ]
+
 
 class SearchForm(Form):
     first_name = StringField('First Name', [name_length_check])
     last_name = StringField('Last Name', [name_length_check])
     encoding = SelectField('Search Type',
                            default='normalize',
-                           choices=[('exact', 'Exact match'),
-                                    ('normalized', 'Ignore case'),
-                                    ('soundex', 'Soundex'),
-                                    ('metaphone', 'Metaphone'),
-                                    ('nysiis', 'NYSIIS'),
-                                    ],
+                           choices=ENCODING_CHOICES,
                            )
 
 
@@ -112,31 +114,52 @@ def make_encoded_expression(field, encoded):
     return {'$or': [{field: e} for e in encoded]}
 
 
+def make_query_for_encoding(form, encoding):
+    encoder = ENCODERS[encoding]
+    q = {}
+    if form.first_name.data:
+        q.update(make_encoded_expression('first_name',
+                                         encoder(form.first_name.data),
+                                         )
+                 )
+    if form.last_name.data:
+        q.update(make_encoded_expression('last_name',
+                                         encoder(form.last_name.data),
+                                         )
+                 )
+    if q:
+        q['encoding'] = encoding
+    return q
+
+
 @app.route('/search')
 @set_navbar_active
 def search():
     results = []
+    alternate_counts = []
     form = SearchForm(request.args, csrf_enabled=False)
     if form.validate():
-        encoder = ENCODERS[form.encoding.data]
-        q = {}
-        if form.first_name.data:
-            q.update(make_encoded_expression('first_name',
-                                             encoder(form.first_name.data),
-                                             )
-                     )
-        if form.last_name.data:
-            q.update(make_encoded_expression('last_name',
-                                             encoder(form.last_name.data),
-                                             )
-                     )
+        q = make_query_for_encoding(form, form.encoding.data)
         if q:
-            q['encoding'] = form.encoding.data
             app.logger.debug('query = %s', q)
-            results = mongo.db.participants.find(q, sort=[('date', ASCENDING)])
+            participants = mongo.db.participants
+            results = participants.find(q, sort=[('date', ASCENDING)])
+            alternate_counts = [
+                {'encoding': display_name,
+                 'count': participants.find(make_query_for_encoding(form, encoding_name)).count(),
+                 'url': participant_search_url({'first_name': form.first_name.data,
+                                                'last_name': form.last_name.data,
+                                                },
+                                               encoding_name),
+                 }
+                for encoding_name, display_name in ENCODING_CHOICES
+                if encoding_name != form.encoding.data
+                ]
+            app.logger.debug('alternates: %r', alternate_counts)
     return render_template('search.html',
                            form=form,
                            results=results,
+                           alternate_counts=alternate_counts,
                            )
 
 
