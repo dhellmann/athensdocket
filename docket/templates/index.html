@@ -6,22 +6,22 @@
       <div class="row-fluid">
 
         <div class="span12">
-          <div class="hero-unit">
             <h1>Athens Docket History Project</h1>
             <p>The <em>Athens Docket History</em> site is a project of
             the <a href="http://www.clarke.public.lib.ga.us/hqdepts/heritage/index.html">Athens-Clarke
             County Heritage Room</a>. We are creating a web-based
             index of historical police and court records from
             Athens-Clarke County, Georgia, USA.
-            <a class="btn btn-medium" href="{{ url_for('about') }}">Learn more &raquo;</a></p>
+            <a class="btn btn-small" href="{{ url_for('about') }}">Learn more &raquo;</a></p>
             <p>
-            <a class="btn btn-primary btn-large" href="{{
+            <a class="btn btn-primary" href="{{
+            url_for('browse') }}"><i class="icon-book icon-white"></i>
+            Browse</a>
+            <a class="btn btn-primary" href="{{
             url_for('search') }}"><i class="icon-search
             icon-white"></i> Search</a>
-            <a class="btn btn-primary btn-large" href="{{
-            url_for('browse') }}"><i class="icon-book icon-white"></i> Browse</a></p>
-          </div>
-          <div>
+            </p>
+
             <center><img src="{{ url_for('static',
             filename='images/city_hall.jpg')}}" alt="etching of
             Athens, GA city hall"></center>
