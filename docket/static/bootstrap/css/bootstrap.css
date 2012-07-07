@@ -1770,6 +1770,13 @@ table .span24 {
   margin-left: 0;
 }
 
+footer {
+  padding: 1em;
+  color: #ffffff;
+  background-image: url('/static/images/banner.jpg');
+  background-repeat: repeat-x;
+}
+
 [class^="icon-"],
 [class*=" icon-"] {
   display: inline-block;
@@ -3255,7 +3262,7 @@ input[type="submit"].btn.btn-mini {
 .nav-list > .active > a:hover {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
-  background-color: #f8ffb7;
+  background-color: #0088cc;
 }
 
 .nav-list [class^="icon-"] {
@@ -3322,7 +3329,6 @@ input[type="submit"].btn.btn-mini {
 }
 
 .nav-tabs > li > a:hover {
-  background-color: #f8ffb7;
   border-color: #000000 #000000 #dddddd;
 }
 
@@ -3330,7 +3336,7 @@ input[type="submit"].btn.btn-mini {
 .nav-tabs > .active > a:hover {
   color: #555555;
   cursor: default;
-  background-color: #f8ffb7;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-bottom-color: transparent;
 }
