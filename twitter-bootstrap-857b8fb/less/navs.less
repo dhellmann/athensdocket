@@ -18,7 +18,7 @@
 }
 .nav > li > a:hover {
   text-decoration: none;
-  background-color: @grayLighter;
+  background-color: @agedYellowBrighter;
 }
 
 // Redeclare pull classes because of specifity
@@ -33,7 +33,7 @@
   font-size: 11px;
   font-weight: bold;
   line-height: @baseLineHeight;
-  color: @grayLight;
+  color: @black;
   text-shadow: 0 1px 0 rgba(255,255,255,.5);
   text-transform: uppercase;
 }
@@ -64,7 +64,7 @@
 .nav-list > .active > a:hover {
   color: @white;
   text-shadow: 0 -1px 0 rgba(0,0,0,.2);
-  background-color: @linkColor;
+  background-color: @agedYellowDarker;
 }
 .nav-list [class^="icon-"] {
   margin-right: 2px;
@@ -112,17 +112,18 @@
   padding-top: 8px;
   padding-bottom: 8px;
   line-height: @baseLineHeight;
-  border: 1px solid transparent;
+  border: 1px solid #ddd;
   .border-radius(4px 4px 0 0);
   &:hover {
-    border-color: @grayLighter @grayLighter #ddd;
+	background-color: @agedYellowDarker;
+    border-color: @black @black #ddd;
   }
 }
 // Active state, and it's :hover to override normal :hover
 .nav-tabs > .active > a,
 .nav-tabs > .active > a:hover {
   color: @gray;
-  background-color: @white;
+  background-color: @agedYellowDarker;
   border: 1px solid #ddd;
   border-bottom-color: transparent;
   cursor: default;
