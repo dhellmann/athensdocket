@@ -76,6 +76,7 @@ def main():
 
     # for browse
     database.cases.create_index('date')
+    database.cases.create_index('location')
     database.cases.create_index([
             ('book', ASCENDING),
             ('page', ASCENDING),

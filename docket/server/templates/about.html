@@ -8,10 +8,45 @@
     <h1>Athens Docket History Project</h1>
   </div>
 
-  <div class="row-fluid">
-    <div class="span12">
-      More details coming soon...
-    </div><!--/span-->
-  </div><!--/row-->
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      <li><a href="#background"
+      data-toggle="tab"><i class="icon-book"></i> The Project</a></li>
+      <li class="active"><a href="#code" data-toggle="tab"><i class="icon-th-list"></i> City Codes</a></li>
+      <li><a href="#technology" data-toggle="tab"><i class="icon-wrench"></i> Technology</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane" id="background">
+        <p>More to come...</p>
+      </div>
+
+      <div class="tab-pane active" id="code">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in violations %}
+            <tr>
+              <td><a href="{{ url_for('code', code=v.code) }}">{{v.code}}</a></td>
+              <td>{{v.summary}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div><!--/tab-pane-->
+
+      <div class="tab-pane" id="technology">
+        <p>More to come...</p>
+      </div>
+
+    </div><!--/tab-content-->
+
+  </div><!--/tabbable-->
+
 </div>
 {% endblock %}

@@ -14,11 +14,9 @@ from flask.ext.pymongo import ASCENDING
 def browse():
     books = mongo.db.books.find()
     years = sorted(set(b['year'] for b in books))
-    violations = mongo.db.violation_codes.find(sort=[('code', ASCENDING)])
     locations = sorted(mongo.db.cases.distinct('location'))
     return render_template('browse.html',
                            years=years,
-                           violations=violations,
                            locations=locations,
                            )
 
