@@ -3,3 +3,4 @@ TAGS
 *.log
 sample_data.txt
 nohup.out
+session-secret.txt

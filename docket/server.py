@@ -5,7 +5,8 @@ import os
 import sys
 import urllib
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, app_dir)
 
 from flask import Flask, render_template, g, request, url_for, session
 from flask.ext.pymongo import PyMongo, ASCENDING
@@ -15,7 +16,12 @@ from docket.encodings import ENCODERS
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'not-very-secret'
+try:
+    with open(os.path.join(app_dir, 'session-secret.txt'), 'rt') as f:
+        key = f.read()
+except (IOError, OSError):
+    key = 'not-very-secret'
+app.config['SECRET_KEY'] = key
 
 app.config['MONGO_DBNAME'] = 'docket'
 mongo = PyMongo(app)
