@@ -15,9 +15,11 @@ def browse():
     books = mongo.db.books.find()
     years = sorted(set(b['year'] for b in books))
     violations = mongo.db.violation_codes.find(sort=[('code', ASCENDING)])
+    locations = sorted(mongo.db.cases.distinct('location'))
     return render_template('browse.html',
                            years=years,
                            violations=violations,
+                           locations=locations,
                            )
 
 
@@ -57,9 +59,13 @@ def browse_date(year, month=None, day=None):
                            )
 
 
-@app.route('/code/<code>')
-def code(code):
-    violation = mongo.db.violation_codes.find_one({'_id': code})
-    return render_template('code.html',
-                           violation=violation,
+@app.route('/browse/location/<location>')
+def browse_location(location):
+    cases = mongo.db.cases.find({'location': location,
+                                 },
+                                sort=[('date', ASCENDING)],
+                                )
+    return render_template('browse_location.html',
+                           location=location,
+                           cases=cases,
                            )
