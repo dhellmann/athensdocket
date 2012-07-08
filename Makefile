@@ -4,5 +4,5 @@
 bootstrap:
 	rm -rf twitter-bootstrap-*/bootstrap
 	(cd twitter-bootstrap-* && make bootstrap)
-	rsync -av twitter-bootstrap-*/bootstrap docket/static
+	rsync -av twitter-bootstrap-*/bootstrap docket/server/static
 	rm -rf twitter-bootstrap-*/bootstrap
