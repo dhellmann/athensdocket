@@ -108,6 +108,7 @@ ENCODING_CHOICES = [('exact', 'Exact match'),
                     ('metaphone', 'Metaphone'),
                     ('nysiis', 'NYSIIS'),
                     ]
+ENCODING_CHOICE_DICT = dict(ENCODING_CHOICES)
 
 
 class SearchForm(Form):
@@ -176,9 +177,12 @@ def search():
             search_terms = dict((n, getattr(form, n).data)
                                 for n in q.keys()
                                 )
+            display_terms = {}
+            display_terms.update(search_terms)
+            display_terms['encoding'] = ENCODING_CHOICE_DICT[search_terms['encoding']]
             history_entry = {
                 'url': urllib.urlencode(search_terms),
-                'terms': search_terms,
+                'terms': display_terms,
                 'hits': count,
                 }
             history = [h
