@@ -76,7 +76,7 @@
           </tr>
           <tr>
             <th width="15%">Location</th>
-            <td>{{case.location}}</td>
+            <td><a href="{{url_for('browse_location', location=case.location)}}">{{case.location}}</a></td>
           </tr>
           <tr>
             <th width="15%">Violation</th>
