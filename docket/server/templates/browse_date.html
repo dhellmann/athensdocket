@@ -1,80 +1,54 @@
 {% extends "base.html" %}
-{% block title %}Browse by date: {{date_range}}{% endblock %}
+{% block title %}Browse by Date{% endblock %}
 
 {% block content %}
 
 <div class="container-fluid">
 
-<div class="page-header">
-  <h1>Browse <small>By Date</small></h1>
+  <div class="page-header">
+    <h1>Browse <small>by Date</small></h1>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span12">
+      <ul class="breadcrumb">
+        <li><a href="{{ url_for('browse') }}">Browse</a> <span class="divider">/</span></li>
+        <li>by Date</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span8">
+
+      <table class="table table-striped">
+        <tbody>
+          {% for y in years %}
+          <tr>
+            <td>
+              <a href="{{ url_for('browse_date', year=y)}}">{{y}}</a> -
+              <a href="{{ url_for('browse_date', year=y,
+                       month=1)}}">Jan</a> -
+              <a href="{{ url_for('browse_date', year=y, month=2) }}">Feb</a> -
+              <a href="{{ url_for('browse_date', year=y, month=3) }}">Mar</a> -
+              <a href="{{ url_for('browse_date', year=y, month=4) }}">Apr</a> -
+              <a href="{{ url_for('browse_date', year=y, month=5) }}">May</a> -
+              <a href="{{ url_for('browse_date', year=y, month=6) }}">Jun</a> -
+              <a href="{{ url_for('browse_date', year=y, month=7) }}">Jul</a> -
+              <a href="{{ url_for('browse_date', year=y, month=8) }}">Aug</a> -
+              <a href="{{ url_for('browse_date', year=y, month=9) }}">Sep</a> -
+              <a href="{{ url_for('browse_date', year=y, month=10) }}">Oct</a> -
+              <a href="{{ url_for('browse_date', year=y, month=11) }}">Nov</a> -
+              <a href="{{ url_for('browse_date', year=y, month=12) }}">Dec</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
 </div>
 
-<div class="row-fluid">
-<div class="span8">
-
-<ul class="breadcrumb">
-  <li><a href="{{ url_for('browse') }}">Browse</a> <span class="divider">/</span></li>
-  <li>
-  {%- if month %}
-  <a href="{{url_for('browse_date', year=year)}}">{{year}}</a> <span class="divider">/</span>
-  {% else %} 
-  {{year}}
-  {% endif %}
-  </li>
-  {%- if day %}
-  <li>
-    <a href="{{url_for('browse_date', year=year,
-    month=month)}}">{{'%02d'|format(month)}}</a>  <span class="divider">/</span>
-  </li>
-  {% elif month %}
-  <li>{{'%02d'|format(month)}}</li>
-  {% endif %}
-  {%- if day %}
-  <li>{{'%02d'|format(day)}}</li>
-  {% endif %}
-
-  <span class="pull-right">
-  <li><span class="divider">|</span> <a href="{{ url_for('browse_date', year=year,
-  month=1)}}">Jan</a> <span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=2) }}">Feb</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=3) }}">Mar</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=4) }}">Apr</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=5) }}">May</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=6) }}">Jun</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=7) }}">Jul</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=8) }}">Aug</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=9) }}">Sep</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=10) }}">Oct</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=11) }}">Nov</a><span class="divider">-</span></li>
-  <li><a href="{{ url_for('browse_date', year=year, month=12)
-  }}">Dec</a></li>
-  </span>
-</ul>
-
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th style="text-align: right;" width="10%">Case</th>
-        <th width="20%">Hearing Date</th>
-        <th>Defendant</th>
-        <th width="10%">Violation</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for case in cases %}
-      <tr>
-        <td style="text-align: right;"><a href="{{ url_for('case', caseid=case._id) }}">{{case.number}}</a></td>
-        <td><a href="{{ url_for('browse_date',
-                     year=case.date.year, 
-                     month=case.date.month, 
-                     day=case.date.day)}}">{{case.date|date}}</a></td>
-        <td>{{case.defendant}}</td>
-        <td><a href="{{ url_for('code', code=case.violation) }}">{{case.violation}}</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-</div>
 
 {% endblock %}

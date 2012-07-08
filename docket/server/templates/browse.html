@@ -11,64 +11,19 @@
     <h1>Browse</h1>
   </div>
 
-  
-  <div class="tabbable">
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#date"
-      data-toggle="tab"><i class="icon-calendar"></i> Cases by Date</a></li>
-      <li><a href="#location"
-      data-toggle="tab"><i class="icon-map-marker"></i> Locations</a></li>
-    </ul>
-    
-    <div class="tab-content">
-      <div class="tab-pane active" id="date">
-        <table class="table table-striped">
-          <tbody>
-            {% for y in years %}
-            <tr>
-              <td>
-                <a href="{{ url_for('browse_date', year=y)}}">{{y}}</a> -
-                <a href="{{ url_for('browse_date', year=y,
-                month=1)}}">Jan</a> -
-                <a href="{{ url_for('browse_date', year=y, month=2) }}">Feb</a> -
-                <a href="{{ url_for('browse_date', year=y, month=3) }}">Mar</a> -
-                <a href="{{ url_for('browse_date', year=y, month=4) }}">Apr</a> -
-                <a href="{{ url_for('browse_date', year=y, month=5) }}">May</a> -
-                <a href="{{ url_for('browse_date', year=y, month=6) }}">Jun</a> -
-                <a href="{{ url_for('browse_date', year=y, month=7) }}">Jul</a> -
-                <a href="{{ url_for('browse_date', year=y, month=8) }}">Aug</a> -
-                <a href="{{ url_for('browse_date', year=y, month=9) }}">Sep</a> -
-                <a href="{{ url_for('browse_date', year=y, month=10) }}">Oct</a> -
-                <a href="{{ url_for('browse_date', year=y, month=11) }}">Nov</a> -
-                <a href="{{ url_for('browse_date', year=y, month=12) }}">Dec</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div><!--/tab-pane-->
+  <div class="row-fluid">
+    <p>
+      <a class="btn btn-primary"
+         href="{{url_for('browse_date')}}"><i class="icon-calendar
+                                                     icon-white"></i> Cases by Date</a> 
+      organized by year and month</p>
 
-      <div class="tab-pane" id="location">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Location Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for loc in locations %}
-            <tr>
-              <td><a href="{{url_for('browse_location', location=loc)}}">{{loc}}</a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div><!--/tab-pane-->
-
-
-    </div><!--/tab-content-->
-
-  </div><!--/tabbable-->
+    <p>
+      <a class="btn btn-primary"
+         href="{{url_for('browse_location')}}"><i class="icon-map-marker
+                                                         icon-white"></i> Cases by Location</a>
+      organized by the description of the location of the offense</p>
+  </div>
 
 </div><!--/container-->
 {% endblock %}
