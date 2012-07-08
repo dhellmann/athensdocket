@@ -65,6 +65,20 @@
     </div>
     {% endif %}
 
+    {% if session['search_history'] %}
+    <div class="well">
+      <ul class="nav nav-list">
+        <li class="nav-header">Recent Searches</li>
+        {% for s in session['search_history'] %}
+        <li><a href="{{url_for('search')}}?{{s.url|safe}}">
+            {{s.terms.first_name}} {{s.terms.last_name}}
+            ({{s.terms.encoding}}) - {{s.hits}}
+        </a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
   </div>
 
   <div class="span9">

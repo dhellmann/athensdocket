@@ -3,10 +3,11 @@ import datetime
 import functools
 import os
 import sys
+import urllib
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from flask import Flask, render_template, g, request, url_for
+from flask import Flask, render_template, g, request, url_for, session
 from flask.ext.pymongo import PyMongo, ASCENDING
 from flask.ext.wtf import Form, StringField, SelectField, validators
 
@@ -14,11 +15,16 @@ from docket.encodings import ENCODERS
 
 app = Flask(__name__)
 
+app.config['SECRET_KEY'] = 'not-very-secret'
+
 app.config['MONGO_DBNAME'] = 'docket'
 mongo = PyMongo(app)
 
 # How short do we allow names for searching?
 MIN_NAME_LENGTH = 3
+
+# How much search history should we keep?
+MAX_SEARCH_HISTORY = 10
 
 # Turn off cross-site checking since we aren't saving user data
 app.csrf_enabled = False
@@ -143,6 +149,7 @@ def search():
         q = make_query_for_encoding(form, form.encoding.data)
         if q:
             app.logger.debug('query = %s', q)
+
             participants = mongo.db.participants
             results = participants.find(q, sort=[('date', ASCENDING)])
             count = results.count()
@@ -158,6 +165,25 @@ def search():
                 if encoding_name != form.encoding.data
                 ]
             app.logger.debug('alternates: %r', alternate_counts)
+
+            #session['search_history'] = []  # useful for clearing the history
+            search_terms = dict((n, getattr(form, n).data)
+                                for n in q.keys()
+                                )
+            history_entry = {
+                'url': urllib.urlencode(search_terms),
+                'terms': search_terms,
+                'hits': count,
+                }
+            history = [h
+                       for h in session.get('search_history', [])
+                       if not h['url'] == history_entry['url']
+                       ][:MAX_SEARCH_HISTORY - 1]
+            history.insert(0, history_entry)
+            session['search_history'] = history
+            app.logger.debug('search history: %r',
+                             session['search_history'])
+
     return render_template('search.html',
                            form=form,
                            results=results,
